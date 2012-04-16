@@ -9,6 +9,7 @@
 #define	_MAINWINDOW_H
 
 #include "ui_mainWindow.h"
+#include "QSystemTrayIcon"
 
 class mainWindow : public QMainWindow {
     Q_OBJECT
@@ -17,6 +18,7 @@ public:
     virtual ~mainWindow();
 private:
     Ui::mainWindow widget;
+    QSystemTrayIcon *trayIcon;
 };
 
 #endif	/* _MAINWINDOW_H */
