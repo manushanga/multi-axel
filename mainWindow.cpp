@@ -8,6 +8,8 @@
 #include "mainWindow.h"
 #include <QDesktopWidget>
 #include <QIcon>
+#include <QInputDialog>
+
 mainWindow::mainWindow() {
     QIcon tray(":/img/tray.png");
     
@@ -19,9 +21,13 @@ mainWindow::mainWindow() {
     QRect frect = frameGeometry();
     frect.moveCenter(QDesktopWidget().availableGeometry().center());
     move(frect.topLeft());
-    
 }
 
 mainWindow::~mainWindow() {
+    delete trayIcon;
 }
 
+void mainWindow::on_actionNew_Download_triggered(){
+    bool ok;
+    QInputDialog::getText(this, tr("Add new URL"), tr("URL"), QLineEdit::Normal , tr(""), &ok);
+}

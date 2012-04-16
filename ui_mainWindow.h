@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainWindow.ui'
 **
-** Created: Mon Apr 16 21:34:09 2012
+** Created: Tue Apr 17 00:16:10 2012
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -102,6 +102,7 @@ public:
         menuAbout->addAction(actionAbout);
 
         retranslateUi(mainWindow);
+        QObject::connect(actionQuit, SIGNAL(triggered()), mainWindow, SLOT(close()));
 
         QMetaObject::connectSlotsByName(mainWindow);
     } // setupUi

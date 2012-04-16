@@ -19,6 +19,8 @@ public:
 private:
     Ui::mainWindow widget;
     QSystemTrayIcon *trayIcon;
+public slots:
+    void on_actionNew_Download_triggered();
 };
 
 #endif	/* _MAINWINDOW_H */
