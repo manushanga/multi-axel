@@ -23,6 +23,7 @@
 #include <sstream>
 #include <fcntl.h>
 #include <sched.h>
+#include <errno.h>
 
 #define DEBUG
 #ifdef DEBUG
@@ -43,22 +44,27 @@ typedef struct _AxelSettings{
     string outputPath;
 }AxelSettings;
 
+int threaded_read(void *obj);
+
 class Axel {
 private:
     string url;
     string name;
     pid_t pid;
     string httpProxy;
-    int out_fd;
+    
     vector<string>* args;
-    state_t state;
+    
     
     /* read only for other than the reading thread */
+    
+    
+    
+public:
+    int out_fd;
+    state_t state;
     float speed;
     int percentage;
-    
-    static int threaded_read(void *obj);
-public:
     Axel(string url, AxelSettings& settings);
     void start();
     void stop();

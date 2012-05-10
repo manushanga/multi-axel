@@ -63,7 +63,7 @@ void *mainWindow::thread_updater(void * obj){
             for (int row=0;row<w->axels->size();row++) {
                 Axel *a = w->axels->at(row);
                 state_t status = a->getStatus();
-                DPRINT("%d",status);
+               // DPRINT("%d",status);
                 w->listModel-> item(row, DL_STATUS)->setText(statenames[status]);
                 if (status == AXEL_DOWNLOADING || status == AXEL_NOMULTI) {
                     QString qa;

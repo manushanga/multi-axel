@@ -1,4 +1,5 @@
 #include "Axels.h"
+#include <syscall.h>
 
 Axel::Axel(string url, AxelSettings& settings){
     this->url = url;
@@ -43,7 +44,7 @@ Axel::Axel(string url, AxelSettings& settings){
         this->name = url.substr(p+1);
     }
 }
-int Axel::threaded_read(void *obj){
+int threaded_read(void *obj){
     DPRINT("in threadd");
     char d[20]={'\0'};
     char sp[20];
@@ -55,20 +56,28 @@ int Axel::threaded_read(void *obj){
     int rd=read(ax->out_fd, d, 19);
     if (rd==-1)
         perror("Axel::threaded_read");
-    while (rd>0 && info.find("Starting download",0)==string::npos) {
+    while (rd==19 && info.find("Starting download",0)==string::npos) {
         info.append(d, rd);
         DPRINT("%d\n",rd);
         rd=read(ax->out_fd, d, 19);
+        if (rd == -1 && errno == EINTR) {
+            perror("xx");
+    
+            rd=read(ax->out_fd, d, 19);
+            continue;
+        }
     }
+    info.append(d, rd);
+    DPRINT("%d\n",rd);
     DPRINT("dd\n");
     DPRINT("%s",info.c_str());
     DPRINT("\n");
     /* if EOF if hit by now rd==-1 */
     
-    if (rd>0) {
+    if (rd==19) {
         rd=read(ax->out_fd, d, 19);
 
-        while (rd>0) {
+        while (rd==19) {
             for (int i=0;i<rd;i++){
                 if (d[i]=='['){
                     rec=1;
@@ -165,14 +174,14 @@ void Axel::start(){
             this->state = AXEL_DOWNLOADING;
             this->out_fd = pipefd[0];
             
-            waitpid(pid, NULL,WNOHANG);
+           // waitpid(pid, NULL,WNOHANG);
             cout<<pid<<endl;
             //pthread_t th1;
             void *stack_space = malloc(100);
             //pthread_create(&th1, NULL, &Axel::threaded_read, this);
-            clone(&Axel::threaded_read, (void *)((char *)stack_space+99),  CLONE_FILES|CLONE_IO|CLONE_FS, this ) ;
+           // clone(threaded_read, (void *)((char *)stack_space+99),  CLONE_FILES|CLONE_FS|CLONE_IO, this ) ;
          //  pthread_join(th1, NULL);
-           //Axel::threaded_read(this);
+           threaded_read(this);
         } else {
             perror("Axel::start::fork");
         }

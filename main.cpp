@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
 //    sigaction(SIGCHLD, &sa, NULL);
 
 
-    /*AxelSettings s;
+    AxelSettings s;
     s.httpProxy = "";
     s.maxSpeed = 0;
     s.numberOfConnections = 10;
@@ -45,6 +45,6 @@ int main(int argc, char *argv[]) {
     a->start();
     while (1) {}
     return 0;
-   */  return app.exec();
+    return app.exec();
 }
 
