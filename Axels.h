@@ -7,6 +7,7 @@
 
 #ifndef AXELS_H
 #define	AXELS_H
+
 #include <cstdio>
 #include <iostream>
 #include <unistd.h>
@@ -15,12 +16,24 @@
 #include <vector>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <signal.h>
 #include <pthread.h>
-#include <semaphore.h>
 #include <string.h>
 #include <algorithm>
+#include <sstream>
+#include <fcntl.h>
+#include <sched.h>
+
+#define DEBUG
+#ifdef DEBUG
+	#include <stdio.h>
+	#define DPRINT(...) fprintf(stderr, __VA_ARGS__)
+#else
+	#define DPRINT(...) 
+#endif
+
 using namespace std;
-enum state_t{ DOWNLOADING, PAUSED, DONE, ERROR, UNKNOWN, NOMULTI};
+enum state_t{ AXEL_DOWNLOADING=0, AXEL_PAUSED, AXEL_DONE, AXEL_ERROR, AXEL_UNKNOWN, AXEL_NOMULTI };
 
 typedef struct _AxelSettings{
     int numberOfConnections;
@@ -33,6 +46,7 @@ typedef struct _AxelSettings{
 class Axel {
 private:
     string url;
+    string name;
     pid_t pid;
     string httpProxy;
     int out_fd;
@@ -43,28 +57,18 @@ private:
     float speed;
     int percentage;
     
-    static void *threaded_read(void *obj);
-    void setSpeed(float s);
-    void setPercentage(int p);
+    static int threaded_read(void *obj);
 public:
     Axel(string url, AxelSettings& settings);
-    string getTime();
     void start();
     void stop();
     bool isActive();
-    private:
-
+    float getSpeed();
+    int getPercentage();
+    string& getName();
+    state_t getStatus();
 };
 
-class Axels {
-public:
-    Axels();
-    Axels(const Axels& orig);
-    vector<Axel>& listAll();
-    virtual ~Axels();
-private:
-    vector<Axel> all;
-};
 
 #endif	/* AXELS_H */
 

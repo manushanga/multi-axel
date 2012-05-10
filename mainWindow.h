@@ -12,6 +12,9 @@
 #include "QSystemTrayIcon"
 #include <QMenu>
 #include <QAction>
+#include <Axels.h>
+#include <QStandardItemModel>
+
 
 class mainWindow : public QMainWindow {
     Q_OBJECT
@@ -24,6 +27,12 @@ private:
     QMenu *trayMenu;
     QAction *trayNewDownload;
     QAction *trayQuit;
+    QStandardItemModel *listModel;
+    pthread_t th_updater;
+    
+    vector<Axel *> *axels;
+    void startNewDownload(QString url);
+    static void *thread_updater(void *obj);
 public slots:
     void on_actionNew_Download_triggered();
     void on_actionAbout_triggered();

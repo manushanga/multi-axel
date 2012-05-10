@@ -17,7 +17,6 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>Axel.cpp</itemPath>
-      <itemPath>Axels.cpp</itemPath>
       <itemPath>Axels.h</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
