@@ -10,11 +10,13 @@
 #include <QIcon>
 #include <QInputDialog>
 #include <QStringList>
+#include <QItemSelectionModel>
+
 enum cols{DL_NAME=0, DL_STATUS, DL_PERCENTAGE, DL_SPEED};
+
 QString colnames[4] = {"Name", "Status","Percentage","Speed"};
 QString statenames[6] = {"Downloading", "Paused", "Done", "Error", 
     "Unknown", "No multi-connections"};
-
 mainWindow::mainWindow() {
     widget.setupUi(this);
     QIcon tray(":/img/tray.png");
@@ -63,7 +65,6 @@ void *mainWindow::thread_updater(void * obj){
             for (int row=0;row<w->axels->size();row++) {
                 Axel *a = w->axels->at(row);
                 state_t status = a->getStatus();
-               // DPRINT("%d",status);
                 w->listModel-> item(row, DL_STATUS)->setText(statenames[status]);
                 if (status == AXEL_DOWNLOADING || status == AXEL_NOMULTI) {
                     QString qa;
@@ -78,12 +79,17 @@ void *mainWindow::thread_updater(void * obj){
                     w->listModel-> item(row, DL_SPEED)->setText(qa);
                     
                     qa.sprintf("%d", 0);
-                    w->listModel-> item(row, DL_PERCENTAGE)->setText(qa);
-
+                    w->listModel-> item(row, DL_PERCENTAGE)->setText(qa);                
+                } else if (status == AXEL_DONE) {
+                    QString qa;
+                    qa.sprintf("%f", 0.0f );
+                    w->listModel-> item(row, DL_SPEED)->setText(qa);
                     
+                    qa.sprintf("%d", 100);
+                    w->listModel-> item(row, DL_PERCENTAGE)->setText(qa);      
                 }
             }
-            sleep(1);
+            usleep(900);
         }
     }
     return NULL;
@@ -94,18 +100,28 @@ void mainWindow::startNewDownload(QString url){
     s.maxSpeed = 0;
     s.numberOfConnections = 10;
     s.userAgent = "";
-    s.outputPath = "/home/madura/Downloads/ss.zip";
-    char *f="http://www.openworlds.org/data/The.Cove.2009.LIMITED.DVDRip.XviD-AMIABLE/The.Cove.2009.LIMITED.DVDRip.XviD-AMIABLE.avi";
-    char *jk="http://joomlacode.org/gf/download/frsrelease/16914/73508/Joomla_2.5.4-Stable-Full_Package.zip";
+    s.outputPath = "";
+    s.workingDirectory = "/home/madura/Downloads";
     Axel *a = new Axel(url.toStdString(), s);
     a->start();
     this->listModel->setItem(axels->size(), DL_NAME, new QStandardItem());
     this->listModel->setItem(axels->size(), DL_STATUS, new QStandardItem());
     this->listModel->setItem(axels->size(), DL_PERCENTAGE, new QStandardItem());
     this->listModel->setItem(axels->size(), DL_SPEED, new QStandardItem());
-    
     this->listModel->item(axels->size(), DL_NAME)->setText(QString::fromStdString(a->getName()));
     axels->push_back(a);
+}
+void mainWindow::on_pbStart_clicked(){
+    QItemSelectionModel *sm = widget.lstDownloads->selectionModel();
+    QModelIndex qi = sm->selectedRows(0)[0];
+    
+    this->axels->at(qi.row())->start();
+}
+void mainWindow::on_pbStop_clicked(){
+    QItemSelectionModel *sm = widget.lstDownloads->selectionModel();
+    QModelIndex qi = sm->selectedRows(0)[0];
+    DPRINT("%d\n",qi.row());
+    this->axels->at(qi.row())->stop();
 }
 void mainWindow::on_actionNew_Download_triggered(){
     bool ok;

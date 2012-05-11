@@ -30,8 +30,8 @@ int main(int argc, char *argv[]) {
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
     sa.sa_handler = child_handler;
-//    sigaction(SIGCHLD, &sa, NULL);
-
+   sigaction(SIGCHLD, &sa, NULL);
+/*
 
     AxelSettings s;
     s.httpProxy = "";
@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
     Axel *a = new Axel(jk, s);
     a->start();
     while (1) {}
-    return 0;
+    return 0;*/
     return app.exec();
 }
 

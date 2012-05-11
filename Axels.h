@@ -25,6 +25,7 @@
 #include <sched.h>
 #include <errno.h>
 
+#define BUFSIZE 40
 #define DEBUG
 #ifdef DEBUG
 	#include <stdio.h>
@@ -42,9 +43,10 @@ typedef struct _AxelSettings{
     string userAgent;
     string httpProxy;
     string outputPath;
+    string workingDirectory;
 }AxelSettings;
 
-int threaded_read(void *obj);
+
 
 class Axel {
 private:
@@ -54,17 +56,14 @@ private:
     string httpProxy;
     
     vector<string>* args;
-    
-    
     /* read only for other than the reading thread */
-    
-    
-    
-public:
     int out_fd;
     state_t state;
     float speed;
     int percentage;
+    string workingdir;
+    static void *threaded_read(void *obj);
+public:
     Axel(string url, AxelSettings& settings);
     void start();
     void stop();
