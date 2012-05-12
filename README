@@ -1,0 +1,15 @@
+Multi-Axel Read Me
+==================
+
+Compiling
+=========
+
+You need Qt development files to build this project having Netbeans is not
+essential but it certainly makes building and editing easier, otherwise you can 
+just use qmake on the *.pro files in nbproject directory.
+
+Usage
+=====
+
+You MUST have axel installed. The program is tested on Linux only, and should
+run on any POSIX supported platform.

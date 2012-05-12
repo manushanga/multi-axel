@@ -18,7 +18,7 @@ static void child_handler(int sig){
     int status;
 
     while((pid = waitpid(-1, &status, WNOHANG)) > 0){
-        cout<<"status:"<<status<<" "<<sig<<endl;
+        DPRINT(status);
     }
 }
 
@@ -34,21 +34,8 @@ int main(int argc, char *argv[]) {
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
     sa.sa_handler = child_handler;
-   sigaction(SIGCHLD, &sa, NULL);
-/*
+    sigaction(SIGCHLD, &sa, NULL);
 
-    AxelSettings s;
-    s.httpProxy = "";
-    s.maxSpeed = 0;
-    s.numberOfConnections = 10;
-    s.userAgent = "";
-    s.outputPath = "/home/madura/Downloads/ss.zip";
-    char *f="http://www.openworlds.org/data/The.Cove.2009.LIMITED.DVDRip.XviD-AMIABLE/The.Cove.2009.LIMITED.DVDRip.XviD-AMIABLE.avi";
-    char *jk="http://joomlacode.org/gf/download/frsrelease/16914/73508/Joomla_2.5.4-Stable-Full_Package.zip";
-    Axel *a = new Axel(jk, s);
-    a->start();
-    while (1) {}
-    return 0;*/
     return app.exec();
 }
 
