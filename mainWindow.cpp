@@ -101,8 +101,9 @@ void *mainWindow::thread_updater(void * obj){
                     w->listModel-> item(row, DL_PERCENTAGE)->setText(qa);      
                 }
             }
-            usleep(900);
+            
         }
+        usleep(900);
     }
     return NULL;
 }
