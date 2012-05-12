@@ -8,9 +8,15 @@
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
                    projectFiles="true">
+      <itemPath>aboutWindow.cpp</itemPath>
+      <itemPath>aboutWindow.h</itemPath>
+      <itemPath>aboutWindow.ui</itemPath>
       <itemPath>mainWindow.cpp</itemPath>
       <itemPath>mainWindow.h</itemPath>
       <itemPath>mainWindow.ui</itemPath>
+      <itemPath>settingsWindow.cpp</itemPath>
+      <itemPath>settingsWindow.h</itemPath>
+      <itemPath>settingsWindow.ui</itemPath>
       <itemPath>res/trayIcon.qrc.qrc</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"

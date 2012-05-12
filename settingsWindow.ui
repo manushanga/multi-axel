@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>settingsWindow</class>
+ <widget class="QDialog" name="settingsWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>652</width>
+    <height>205</height>
+   </rect>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>205</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>settingsWindow</string>
+  </property>
+  <layout class="QFormLayout" name="formLayout">
+   <property name="fieldGrowthPolicy">
+    <enum>QFormLayout::ExpandingFieldsGrow</enum>
+   </property>
+   <item row="0" column="0" colspan="2">
+    <widget class="QLabel" name="label">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>17</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Note: Leaving empty will make multi-axel use the default setting for the field left blank.</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="outputDirectoryLabel">
+     <property name="text">
+      <string>Output directory</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="outputDirectoryLineEdit"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="maxSpeedLabel">
+     <property name="text">
+      <string>Max speed</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QLineEdit" name="maxSpeedLineEdit"/>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="maxConnectionsLabel">
+     <property name="text">
+      <string>Max connections</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QLineEdit" name="maxConnectionsLineEdit"/>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="proxyLabel">
+     <property name="text">
+      <string>Proxy
+(user:pass@host:port)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QLineEdit" name="proxyLineEdit"/>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="userAgentLabel">
+     <property name="text">
+      <string>User agent</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="QLineEdit" name="userAgentLineEdit"/>
+   </item>
+   <item row="7" column="1">
+    <widget class="QDialogButtonBox" name="pbBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

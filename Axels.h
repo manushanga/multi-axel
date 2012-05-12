@@ -8,28 +8,14 @@
 #ifndef AXELS_H
 #define	AXELS_H
 
-#include <cstdio>
-#include <iostream>
-#include <unistd.h>
-#include <stdlib.h>
 #include <string>
 #include <vector>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <signal.h>
-#include <pthread.h>
-#include <string.h>
-#include <algorithm>
-#include <sstream>
-#include <fcntl.h>
-#include <sched.h>
-#include <errno.h>
 
 #define BUFSIZE 40
 #define DEBUG
 #ifdef DEBUG
-	#include <stdio.h>
-	#define DPRINT(...) fprintf(stderr, __VA_ARGS__)
+	#include <iostream>
+	#define DPRINT(...) std::cout<<__VA_ARGS__
 #else
 	#define DPRINT(...) 
 #endif
@@ -42,11 +28,10 @@ typedef struct _AxelSettings{
     int maxSpeed;
     string userAgent;
     string httpProxy;
+    string ftpProxy;
     string outputPath;
     string workingDirectory;
 }AxelSettings;
-
-
 
 class Axel {
 private:
@@ -54,6 +39,7 @@ private:
     string name;
     pid_t pid;
     string httpProxy;
+    string ftpProxy;
     
     vector<string>* args;
     /* read only for other than the reading thread */

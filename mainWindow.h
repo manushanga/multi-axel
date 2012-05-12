@@ -33,10 +33,12 @@ private:
     vector<Axel *> *axels;
     void startNewDownload(QString url);
     static void *thread_updater(void *obj);
-
+    AxelSettings *settings;
+    
 public slots:
     void on_actionNew_Download_triggered();
     void on_actionAbout_triggered();
+    void on_actionSettings_triggered();
     void on_pbAdd_clicked();
     void on_pbStart_clicked();
     void on_pbStop_clicked();

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainWindow.ui'
 **
-** Created: Thu Apr 19 23:20:58 2012
+** Created: Sat May 12 14:24:34 2012
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -32,6 +32,7 @@ public:
     QAction *actionQuit;
     QAction *actionNew_Download;
     QAction *actionAbout;
+    QAction *actionSettings;
     QWidget *centralwidget;
     QVBoxLayout *verticalLayout;
     QTreeView *lstDownloads;
@@ -42,6 +43,7 @@ public:
     QMenuBar *menubar;
     QMenu *menuFile;
     QMenu *menuAbout;
+    QMenu *menuSettings;
 
     void setupUi(QMainWindow *mainWindow)
     {
@@ -54,6 +56,8 @@ public:
         actionNew_Download->setObjectName(QString::fromUtf8("actionNew_Download"));
         actionAbout = new QAction(mainWindow);
         actionAbout->setObjectName(QString::fromUtf8("actionAbout"));
+        actionSettings = new QAction(mainWindow);
+        actionSettings->setObjectName(QString::fromUtf8("actionSettings"));
         centralwidget = new QWidget(mainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         verticalLayout = new QVBoxLayout(centralwidget);
@@ -88,19 +92,23 @@ public:
         mainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(mainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 389, 22));
+        menubar->setGeometry(QRect(0, 0, 389, 27));
         menuFile = new QMenu(menubar);
         menuFile->setObjectName(QString::fromUtf8("menuFile"));
         menuAbout = new QMenu(menubar);
         menuAbout->setObjectName(QString::fromUtf8("menuAbout"));
+        menuSettings = new QMenu(menubar);
+        menuSettings->setObjectName(QString::fromUtf8("menuSettings"));
         mainWindow->setMenuBar(menubar);
 
         menubar->addAction(menuFile->menuAction());
+        menubar->addAction(menuSettings->menuAction());
         menubar->addAction(menuAbout->menuAction());
         menuFile->addAction(actionNew_Download);
         menuFile->addSeparator();
         menuFile->addAction(actionQuit);
         menuAbout->addAction(actionAbout);
+        menuSettings->addAction(actionSettings);
 
         retranslateUi(mainWindow);
         QObject::connect(actionQuit, SIGNAL(triggered()), mainWindow, SLOT(close()));
@@ -114,11 +122,13 @@ public:
         actionQuit->setText(QApplication::translate("mainWindow", "Quit", 0, QApplication::UnicodeUTF8));
         actionNew_Download->setText(QApplication::translate("mainWindow", "New Download", 0, QApplication::UnicodeUTF8));
         actionAbout->setText(QApplication::translate("mainWindow", "About", 0, QApplication::UnicodeUTF8));
+        actionSettings->setText(QApplication::translate("mainWindow", "Settings", 0, QApplication::UnicodeUTF8));
         pbAdd->setText(QApplication::translate("mainWindow", "Add", 0, QApplication::UnicodeUTF8));
         pbStart->setText(QApplication::translate("mainWindow", "Start", 0, QApplication::UnicodeUTF8));
         pbStop->setText(QApplication::translate("mainWindow", "Stop", 0, QApplication::UnicodeUTF8));
         menuFile->setTitle(QApplication::translate("mainWindow", "File", 0, QApplication::UnicodeUTF8));
         menuAbout->setTitle(QApplication::translate("mainWindow", "Help", 0, QApplication::UnicodeUTF8));
+        menuSettings->setTitle(QApplication::translate("mainWindow", "Options", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

@@ -8,6 +8,10 @@
 #include <QtGui/QApplication>
 #include <mainWindow.h>
 #include <iostream>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
 using namespace std;
 static void child_handler(int sig){
     pid_t pid;

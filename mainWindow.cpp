@@ -12,6 +12,9 @@
 #include <QStringList>
 #include <QItemSelectionModel>
 
+#include "settingsWindow.h"
+#include "aboutWindow.h"
+
 enum cols{DL_NAME=0, DL_STATUS, DL_PERCENTAGE, DL_SPEED};
 
 QString colnames[4] = {"Name", "Status","Percentage","Speed"};
@@ -44,9 +47,18 @@ mainWindow::mainWindow() {
     widget.lstDownloads->setModel(listModel);
 
     axels = new vector<Axel *>;
+    this->settings = new AxelSettings;
+    this->settings->httpProxy = "";
+    this->settings->maxSpeed = 0;
+    this->settings->numberOfConnections = 10;
+    this->settings->userAgent = "";
+    this->settings->outputPath = "";
+    this->settings->workingDirectory = string("/home/") + string(getenv("USER")) +string("/Downloads");
+
     QRect frect = frameGeometry();
     frect.moveCenter(QDesktopWidget().availableGeometry().center());
     move(frect.topLeft());
+    
     
     pthread_create(&this->th_updater, NULL, &mainWindow::thread_updater, this);
 }
@@ -95,14 +107,7 @@ void *mainWindow::thread_updater(void * obj){
     return NULL;
 }
 void mainWindow::startNewDownload(QString url){
-    AxelSettings s;
-    s.httpProxy = "";
-    s.maxSpeed = 0;
-    s.numberOfConnections = 10;
-    s.userAgent = "";
-    s.outputPath = "";
-    s.workingDirectory = "/home/madura/Downloads";
-    Axel *a = new Axel(url.toStdString(), s);
+    Axel *a = new Axel(url.toStdString(), *this->settings);
     a->start();
     this->listModel->setItem(axels->size(), DL_NAME, new QStandardItem());
     this->listModel->setItem(axels->size(), DL_STATUS, new QStandardItem());
@@ -120,8 +125,13 @@ void mainWindow::on_pbStart_clicked(){
 void mainWindow::on_pbStop_clicked(){
     QItemSelectionModel *sm = widget.lstDownloads->selectionModel();
     QModelIndex qi = sm->selectedRows(0)[0];
-    DPRINT("%d\n",qi.row());
+
     this->axels->at(qi.row())->stop();
+}
+void mainWindow::on_actionSettings_triggered(){
+    settingsWindow sw(this->settings);
+    sw.setModal(true);
+    sw.exec();
 }
 void mainWindow::on_actionNew_Download_triggered(){
     bool ok;
@@ -131,5 +141,7 @@ void mainWindow::on_pbAdd_clicked(){
     on_actionNew_Download_triggered();
 }
 void mainWindow::on_actionAbout_triggered(){
-    
+    aboutWindow ab;
+    ab.setModal(true);
+    ab.exec();
 }

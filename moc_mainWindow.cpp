@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'mainWindow.h'
 **
-** Created: Fri May 11 23:21:02 2012
+** Created: Sat May 12 14:24:41 2012
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.1)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,7 +23,7 @@ static const uint qt_meta_data_mainWindow[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       5,   14, // methods
+       6,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -34,8 +34,9 @@ static const uint qt_meta_data_mainWindow[] = {
       12,   11,   11,   11, 0x0a,
       46,   11,   11,   11, 0x0a,
       73,   11,   11,   11, 0x0a,
-      92,   11,   11,   11, 0x0a,
-     113,   11,   11,   11, 0x0a,
+     103,   11,   11,   11, 0x0a,
+     122,   11,   11,   11, 0x0a,
+     143,   11,   11,   11, 0x0a,
 
        0        // eod
 };
@@ -43,6 +44,7 @@ static const uint qt_meta_data_mainWindow[] = {
 static const char qt_meta_stringdata_mainWindow[] = {
     "mainWindow\0\0on_actionNew_Download_triggered()\0"
     "on_actionAbout_triggered()\0"
+    "on_actionSettings_triggered()\0"
     "on_pbAdd_clicked()\0on_pbStart_clicked()\0"
     "on_pbStop_clicked()\0"
 };
@@ -55,9 +57,10 @@ void mainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         switch (_id) {
         case 0: _t->on_actionNew_Download_triggered(); break;
         case 1: _t->on_actionAbout_triggered(); break;
-        case 2: _t->on_pbAdd_clicked(); break;
-        case 3: _t->on_pbStart_clicked(); break;
-        case 4: _t->on_pbStop_clicked(); break;
+        case 2: _t->on_actionSettings_triggered(); break;
+        case 3: _t->on_pbAdd_clicked(); break;
+        case 4: _t->on_pbStart_clicked(); break;
+        case 5: _t->on_pbStop_clicked(); break;
         default: ;
         }
     }
@@ -96,9 +99,9 @@ int mainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 5)
+        if (_id < 6)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 5;
+        _id -= 6;
     }
     return _id;
 }

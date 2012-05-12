@@ -1,6 +1,20 @@
-#include "Axels.h"
 #include <syscall.h>
 #include <poll.h>
+#include <algorithm>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <pthread.h>
+#include <string.h>
+#include <fcntl.h>
+#include <sched.h>
+#include <errno.h>
+#include <sstream>
+
+#include "Axels.h"
+
 Axel::Axel(string url, AxelSettings& settings){
     this->url = url;
     stringstream s;
@@ -67,7 +81,7 @@ void *Axel::threaded_read(void *obj){
     pfd.revents = 0;
     
     int rd;
-    while (poll(&pfd, 1, 1000) > 0 && info.find("Starting download",0)==string::npos) {
+    while (poll(&pfd, 1, 0) > 0 && info.find("Starting download",0)==string::npos) {
         rd = read(ax->out_fd, d, 1);
         if (rd == -1 && errno == EINTR) {
             perror("Axel::threaded_read::info");
@@ -78,8 +92,8 @@ void *Axel::threaded_read(void *obj){
         
     }
     info.append(d, rd);
-    DPRINT("%d\n",rd);
-    DPRINT("%s\n",info.c_str());
+    DPRINT(rd);
+    DPRINT(info.c_str());
 
     /* if EOF if hit by now rd==-1 */
     
@@ -88,8 +102,14 @@ void *Axel::threaded_read(void *obj){
         ax->state = AXEL_DOWNLOADING;
         
         while ( poll(&pfd, 1, 5000) > 0) {
+            if (ax->pid == 0) {
+                DPRINT("pid0");
+                ax->state = AXEL_PAUSED;
+                close(ax->out_fd);
+                pthread_exit(NULL);
+            }
             rd = read(ax->out_fd, d, BUFSIZE -1);
-            DPRINT("%s %d\n",d,rd);
+            DPRINT(d<<rd);
             for (int i=0;i<rd;i++){
                 if (d[i]=='['){
                     rec=1;
@@ -104,7 +124,7 @@ void *Axel::threaded_read(void *obj){
                     } else if (sp[sp_p-1]=='%') {
                         sp[sp_p-1]='\0';
                         bracket_set=0;
-                        DPRINT("%s\n",sp);
+                        DPRINT(sp);
                         ax->percentage= atoi(sp);
                     }
                 } else if (rec==1){
@@ -146,12 +166,15 @@ void *Axel::threaded_read(void *obj){
     }
      
     DPRINT("thread exiting");
-    DPRINT("%d\n",ax->state);
+    DPRINT(ax->state);
 
     return 0;
 }
 
 void Axel::start(){
+    if (this->state == AXEL_DOWNLOADING)
+        return;
+    
     if (this->pid == 0) {
         int pipefd[2];
         
@@ -177,8 +200,16 @@ void Axel::start(){
                 arr[i]=(char *)this->args->at(i).c_str();
             }
             arr[i] = NULL;
-            if (this->httpProxy.size() != 0){
+            string prot = this->url.substr(0, 5);
+            std::transform(prot.begin(), prot.end(), prot.begin(), ::tolower);
+            if (prot.find("http",0) != string::npos && this->httpProxy.size() != 0  ){
                 char *env=(char *) string("http_proxy=http://").append(this->httpProxy).c_str();
+                char* arre[2];
+                arre[0] = env;
+                arre[1] = NULL;
+                execvpe("axel", arr, arre);
+            } else if (prot.find("ftp",0) != string::npos && this->ftpProxy.size() != 0  ){
+                char *env=(char *) string("ftp_proxy=ftp://").append(this->ftpProxy).c_str();
                 char* arre[2];
                 arre[0] = env;
                 arre[1] = NULL;
@@ -191,7 +222,7 @@ void Axel::start(){
         } else if (pid>0) {
             this->pid = pid;
             this->out_fd = pipefd[0];
-            
+            close(pipefd[1]);
             waitpid(pid, NULL,WNOHANG);
             pthread_t th1;
             pthread_create(&th1, NULL, &Axel::threaded_read, this);
@@ -201,9 +232,11 @@ void Axel::start(){
     }
 }
 void Axel::stop(){
-    close(this->out_fd);
-    kill(this->pid, SIGINT);
-    this->pid = 0;
+    if (this->state != AXEL_PAUSED){
+        close(this->out_fd);
+        kill(this->pid, SIGINT);
+        this->pid = 0;
+    }
 }
 int Axel::getPercentage(){
     return this->percentage;
