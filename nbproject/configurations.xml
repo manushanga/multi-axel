@@ -24,6 +24,8 @@
                    projectFiles="true">
       <itemPath>Axel.cpp</itemPath>
       <itemPath>Axels.h</itemPath>
+      <itemPath>fsevent.c</itemPath>
+      <itemPath>fsevent.h</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"

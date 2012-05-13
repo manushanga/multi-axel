@@ -77,7 +77,7 @@ void *Axel::threaded_read(void *obj){
     struct pollfd pfd;
     
     pfd.fd = ax->out_fd;
-    pfd.events = POLLIN|POLLPRI;
+    pfd.events = POLLIN;
     pfd.revents = 0;
     
     int rd;
@@ -87,9 +87,10 @@ void *Axel::threaded_read(void *obj){
             perror("Axel::threaded_read::info");
             rd = read(ax->out_fd, d, 1);
             continue;
-        }
+        }else if (rd==0) 
+            break;
         info.append(d, rd);
-        
+
     }
     info.append(d, rd);
     DPRINT(rd);
@@ -101,15 +102,16 @@ void *Axel::threaded_read(void *obj){
         int bracket_set=0;
         ax->state = AXEL_DOWNLOADING;
         
-        while ( poll(&pfd, 1, 5000) > 0) {
+        while ( poll(&pfd, 1, 5000) > 0 ) {
             if (ax->pid == 0) {
                 DPRINT("pid0");
-                ax->state = AXEL_PAUSED;
                 close(ax->out_fd);
-                pthread_exit(NULL);
+                ax->state = AXEL_PAUSED;
+                return NULL;
             }
             rd = read(ax->out_fd, d, BUFSIZE -1);
-            DPRINT(d<<rd);
+            if (rd==0) 
+                break;
             for (int i=0;i<rd;i++){
                 if (d[i]=='['){
                     rec=1;
@@ -138,6 +140,7 @@ void *Axel::threaded_read(void *obj){
                     }
                 }   
             }
+            DPRINT("in read threeead");
             usleep(500);
         }
         string status_out;
@@ -168,7 +171,7 @@ void *Axel::threaded_read(void *obj){
     DPRINT("thread exiting");
     DPRINT(ax->state);
 
-    return 0;
+    return NULL;
 }
 
 void Axel::start(){

@@ -20,7 +20,7 @@ enum cols{DL_NAME=0, DL_STATUS, DL_PERCENTAGE, DL_SPEED};
 QString colnames[4] = {"Name", "Status","Percentage","Speed"};
 QString statenames[6] = {"Downloading", "Paused", "Done", "Error", 
     "Unknown", "No multi-connections"};
-mainWindow::mainWindow() {
+mainWindow::mainWindow(bool *up) {
     widget.setupUi(this);
     QIcon tray(":/img/tray.png");
     trayIcon = new QSystemTrayIcon(this);
@@ -58,11 +58,10 @@ mainWindow::mainWindow() {
     QRect frect = frameGeometry();
     frect.moveCenter(QDesktopWidget().availableGeometry().center());
     move(frect.topLeft());
-    
-    
-    pthread_create(&this->th_updater, NULL, &mainWindow::thread_updater, this);
-}
 
+    pthread_create(&this->th_updater, NULL, &mainWindow::thread_updater, this);
+    *up = true;
+}
 mainWindow::~mainWindow() {
     pthread_cancel(this->th_updater);
     delete trayIcon;

@@ -9,17 +9,18 @@
 #define	_MAINWINDOW_H
 
 #include "ui_mainWindow.h"
+
 #include "QSystemTrayIcon"
 #include <QMenu>
 #include <QAction>
 #include <Axels.h>
 #include <QStandardItemModel>
 
-
 class mainWindow : public QMainWindow {
     Q_OBJECT
 public:
-    mainWindow();
+    mainWindow(bool *up);
+    void startNewDownload(QString url);
     virtual ~mainWindow();
 private:
     Ui::mainWindow widget;
@@ -31,10 +32,8 @@ private:
     pthread_t th_updater;
     
     vector<Axel *> *axels;
-    void startNewDownload(QString url);
     static void *thread_updater(void *obj);
     AxelSettings *settings;
-    
 public slots:
     void on_actionNew_Download_triggered();
     void on_actionAbout_triggered();

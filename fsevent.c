@@ -2,6 +2,7 @@
 #include <poll.h>
 #include <sys/inotify.h>
 #include <stdio.h>
+
 int fsevent_init(fse_watch_t *fw){
     int fd = inotify_init();
     if (fd==-1) {
@@ -21,6 +22,7 @@ void *read_thread(void *arg){
  
     while (poll(&pfd, 1, -1)) {
         read(fw->fd, (void *) &ie, sizeof(struct inotify_event));
+        printf("%d" ,ie.wd);
         fw->callback(ie.mask);
     }
     return NULL;
