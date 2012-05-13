@@ -118,12 +118,16 @@ void mainWindow::startNewDownload(QString url){
 }
 void mainWindow::on_pbStart_clicked(){
     QItemSelectionModel *sm = widget.lstDownloads->selectionModel();
+    if (sm->selectedIndexes().size() == 0)
+        return;
     QModelIndex qi = sm->selectedRows(0)[0];
     
     this->axels->at(qi.row())->start();
 }
 void mainWindow::on_pbStop_clicked(){
     QItemSelectionModel *sm = widget.lstDownloads->selectionModel();
+    if (sm->selectedIndexes().size() == 0)
+        return;
     QModelIndex qi = sm->selectedRows(0)[0];
 
     this->axels->at(qi.row())->stop();

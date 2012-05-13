@@ -1,17 +1,15 @@
-#include <syscall.h>
-#include <poll.h>
-#include <algorithm>
 #include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <pthread.h>
-#include <string.h>
 #include <fcntl.h>
 #include <sched.h>
 #include <errno.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include <sstream>
+#include <algorithm>
 
 #include "axel.h"
 #include "reader.h"
@@ -74,15 +72,9 @@ void *Axel::threaded_read(void *obj){
     int rec=0,sp_p=0,status_p=0;
     
     Axel *ax=(Axel *)obj;
-    struct pollfd pfd;
     
-    pfd.fd = ax->out_fd;
-    pfd.events = POLLIN;
-    pfd.revents = 0;
-    
-    int rd;
-    while (poll(&pfd, 1, 0) > 0 && info.find("Starting download",0)==string::npos) {
-        rd = read(ax->out_fd, d, 1);
+    int rd = reader_read(ax->out_fd, d);
+    while (rd> 0 && info.find("Starting download",0)==string::npos) {
         if (rd == -1 && errno == EINTR) {
             perror("Axel::threaded_read::info");
             rd = read(ax->out_fd, d, 1);
@@ -90,7 +82,7 @@ void *Axel::threaded_read(void *obj){
         }else if (rd==0) 
             break;
         info.append(d, rd);
-
+        reader_read(ax->out_fd, d);
     }
     info.append(d, rd);
     DPRINT(rd);
@@ -98,18 +90,18 @@ void *Axel::threaded_read(void *obj){
 
     /* if EOF if hit by now rd==-1 */
     
-    if (poll(&pfd, 1, 5000) > 0) {
+    if (rd > 0) {
         int bracket_set=0;
         ax->state = AXEL_DOWNLOADING;
+        rd = reader_read(ax->out_fd, d);
         
-        while ( poll(&pfd, 1, 5000) > 0 ) {
+        while ( rd>0 ) {
             if (ax->pid == 0) {
                 close(ax->out_fd);
                 ax->state = AXEL_PAUSED;
                 DPRINT("thread exiting");
                 return NULL;
             }
-            rd = read(ax->out_fd, d, READER_BUFFER_SIZE -1);
             DPRINT(d);
             if (rd==0) 
                 break;
@@ -127,7 +119,6 @@ void *Axel::threaded_read(void *obj){
                     } else if (sp[sp_p-1]=='%') {
                         sp[sp_p-1]='\0';
                         bracket_set=0;
-                        DPRINT(sp);
                         ax->percentage= atoi(sp);
                     }
                 } else if (rec==1){
@@ -142,6 +133,7 @@ void *Axel::threaded_read(void *obj){
                 }   
             }
             usleep(500);
+            rd = reader_read(ax->out_fd, d);
         }
         string status_out;
         for (int i=status_p-1;i>=status_p-(READER_BUFFER_SIZE*3);i--){
