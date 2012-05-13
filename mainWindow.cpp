@@ -149,6 +149,8 @@ void *mainWindow::thread_updater(void * obj){
     return NULL;
 }
 void mainWindow::startNewDownload(QString url){
+    if (url.trimmed().size() == 0 )
+        return;
     Axel *a = new Axel(url.toStdString(), *this->settings);
     a->start();
     this->listModel->setItem(axels->size(), DL_NAME, new QStandardItem());
