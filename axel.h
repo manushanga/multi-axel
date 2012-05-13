@@ -21,7 +21,15 @@
 
 using namespace std;
 enum state_t{ AXEL_DOWNLOADING=0, AXEL_PAUSED, AXEL_DONE, AXEL_ERROR, AXEL_UNKNOWN, AXEL_NOMULTI };
-
+typedef struct _AxelSettingsSave{
+    int numberOfConnections;
+    int maxSpeed;
+    char userAgent[256];
+    char httpProxy[256];
+    char ftpProxy[256];
+    char outputPath[1024];
+    char workingDirectory[1024];
+}AxelSettingsSave;
 typedef struct _AxelSettings{
     int numberOfConnections;
     int maxSpeed;

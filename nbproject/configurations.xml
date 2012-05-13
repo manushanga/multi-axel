@@ -22,11 +22,14 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>Axel.cpp</itemPath>
-      <itemPath>Axels.h</itemPath>
+      <itemPath>README</itemPath>
+      <itemPath>axel.cpp</itemPath>
+      <itemPath>axel.h</itemPath>
       <itemPath>fsevent.c</itemPath>
       <itemPath>fsevent.h</itemPath>
       <itemPath>main.cpp</itemPath>
+      <itemPath>reader.c</itemPath>
+      <itemPath>reader.h</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"

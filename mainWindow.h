@@ -30,7 +30,8 @@ private:
     QAction *trayQuit;
     QStandardItemModel *listModel;
     pthread_t th_updater;
-    
+    void setSettings(AxelSettingsSave& as);
+    void getSettings(AxelSettingsSave& as);
     vector<Axel *> *axels;
     static void *thread_updater(void *obj);
     AxelSettings *settings;
