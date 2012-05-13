@@ -82,7 +82,7 @@ void *Axel::threaded_read(void *obj){
         }else if (rd==0) 
             break;
         info.append(d, rd);
-        reader_read(ax->out_fd, d);
+        rd = reader_read(ax->out_fd, d);
     }
     info.append(d, rd);
     DPRINT(rd);
@@ -132,7 +132,7 @@ void *Axel::threaded_read(void *obj){
                     }
                 }   
             }
-            usleep(500);
+            usleep(200);
             rd = reader_read(ax->out_fd, d);
         }
         string status_out;

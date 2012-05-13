@@ -89,10 +89,13 @@ int main(int argc, char *argv[]) {
     } else {
         tmp.close();
         ofstream tmpw(TMP);
-        if (argc > 1)
+        if (argc > 1){
             tmpw << getpid() << " " << argv[1];
-        else
+            cout<<"ss"<<endl;
+            sleep(1);
+        } else {
             tmpw << getpid();
+        }
         tmpw.close();
 
         g.callback = fsevent_mod;
@@ -114,7 +117,9 @@ int main(int argc, char *argv[]) {
     signal(SIGKILL, quit_handler);
     signal(SIGINT, quit_handler);
     signal(SIGQUIT, quit_handler);
-
+    
+    if (argc>1)
+        mw->startNewDownload(QString(argv[1]));
     int ret = app.exec();
     quit_handler(0);
     return ret;

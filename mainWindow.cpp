@@ -4,6 +4,7 @@
  *
  * Created on April 16, 2012, 8:02 PM
  */
+#include <unistd.h>
 
 #include "mainWindow.h"
 #include <QDesktopWidget>

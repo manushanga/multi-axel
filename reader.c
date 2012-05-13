@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include "reader.h"
+#include <stdio.h>
 
 int reader_read(int fd, char *buffer){
     int rd = read(fd, buffer, READER_BUFFER_SIZE);
