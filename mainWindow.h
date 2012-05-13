@@ -13,7 +13,7 @@
 #include "QSystemTrayIcon"
 #include <QMenu>
 #include <QAction>
-#include <Axels.h>
+#include <axel.h>
 #include <QStandardItemModel>
 
 class mainWindow : public QMainWindow {

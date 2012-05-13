@@ -8,7 +8,7 @@
 #ifndef _SETTINGSWINDOW_H
 #define	_SETTINGSWINDOW_H
 
-#include "Axels.h"
+#include "axel.h"
 #include "ui_settingsWindow.h"
 
 class settingsWindow : public QDialog {

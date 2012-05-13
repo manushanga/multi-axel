@@ -13,8 +13,8 @@
 #include <errno.h>
 #include <sstream>
 
-#include "Axels.h"
-
+#include "axel.h"
+#include "reader.h"
 Axel::Axel(string url, AxelSettings& settings){
     this->url = url;
     stringstream s;
@@ -67,9 +67,9 @@ Axel::Axel(string url, AxelSettings& settings){
 }
 void *Axel::threaded_read(void *obj){
     DPRINT("in threadd");
-    char d[BUFSIZE];
-    char sp[BUFSIZE];
-    char status[BUFSIZE*3];
+    char d[READER_BUFFER_SIZE];
+    char sp[READER_BUFFER_SIZE];
+    char status[READER_BUFFER_SIZE*3];
     string info;
     int rec=0,sp_p=0,status_p=0;
     
@@ -104,12 +104,13 @@ void *Axel::threaded_read(void *obj){
         
         while ( poll(&pfd, 1, 5000) > 0 ) {
             if (ax->pid == 0) {
-                DPRINT("pid0");
                 close(ax->out_fd);
                 ax->state = AXEL_PAUSED;
+                DPRINT("thread exiting");
                 return NULL;
             }
-            rd = read(ax->out_fd, d, BUFSIZE -1);
+            rd = read(ax->out_fd, d, READER_BUFFER_SIZE -1);
+            DPRINT(d);
             if (rd==0) 
                 break;
             for (int i=0;i<rd;i++){
@@ -135,18 +136,17 @@ void *Axel::threaded_read(void *obj){
                 } else {
                     status[status_p]=d[i];
                     status_p++;
-                    if (status_p==BUFSIZE*3){
+                    if (status_p==READER_BUFFER_SIZE*3){
                         status_p=0;
                     }
                 }   
             }
-            DPRINT("in read threeead");
             usleep(500);
         }
         string status_out;
-        for (int i=status_p-1;i>=status_p-(BUFSIZE*3);i--){
+        for (int i=status_p-1;i>=status_p-(READER_BUFFER_SIZE*3);i--){
             if (i<0){
-                status_out+=status[i+BUFSIZE*3];
+                status_out+=status[i+READER_BUFFER_SIZE*3];
             }else{
                 status_out+=status[i];
             }

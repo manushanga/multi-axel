@@ -11,11 +11,10 @@
 #include <string>
 #include <vector>
 
-#define BUFSIZE 40
 #define DEBUG
 #ifdef DEBUG
 	#include <iostream>
-	#define DPRINT(...) std::cout<<__VA_ARGS__
+	#define DPRINT(...) std::cout<<__VA_ARGS__<<endl
 #else
 	#define DPRINT(...) 
 #endif
