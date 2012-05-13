@@ -29,12 +29,12 @@ private:
     QAction *trayNewDownload;
     QAction *trayQuit;
     QStandardItemModel *listModel;
+    vector<Axel *> *axels;
+    AxelSettings *settings;
     pthread_t th_updater;
     void setSettings(AxelSettingsSave& as);
     void getSettings(AxelSettingsSave& as);
-    vector<Axel *> *axels;
     static void *thread_updater(void *obj);
-    AxelSettings *settings;
 public slots:
     void on_actionNew_Download_triggered();
     void on_actionAbout_triggered();

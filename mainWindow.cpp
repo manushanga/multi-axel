@@ -73,7 +73,7 @@ mainWindow::mainWindow(bool *up) {
     ifstream s_file( settings_path.c_str() , ios::binary|ios::in);
     axels = new vector<Axel *>;
     this->settings = new AxelSettings;
-    DPRINT(settings_path.c_str());
+    DPRINT("Settings "<<settings_path.c_str());
     if (s_file) {
         AxelSettingsSave as;
         s_file.read((char *) &as, sizeof(AxelSettingsSave));
@@ -109,12 +109,14 @@ mainWindow::~mainWindow() {
     delete trayMenu;
     delete trayNewDownload;
     delete trayQuit;
+    delete listModel;
+    delete settings;
 }
 void *mainWindow::thread_updater(void * obj){
     mainWindow *w = (mainWindow *) obj;
     while (1) {
         if (w->axels->size()>0 ){
-            for (int row=0;row<w->axels->size();row++) {
+            for (size_t row=0;row<w->axels->size();row++) {
                 Axel *a = w->axels->at(row);
                 state_t status = a->getStatus();
                 w->listModel-> item(row, DL_STATUS)->setText(statenames[status]);

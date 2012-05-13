@@ -1,5 +1,6 @@
 #include "fsevent.h"
 #include <poll.h>
+#include <unistd.h>
 #include <sys/inotify.h>
 #include <stdio.h>
 

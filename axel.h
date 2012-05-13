@@ -30,6 +30,7 @@ typedef struct _AxelSettingsSave{
     char outputPath[1024];
     char workingDirectory[1024];
 }AxelSettingsSave;
+
 typedef struct _AxelSettings{
     int numberOfConnections;
     int maxSpeed;

@@ -67,3 +67,4 @@ void settingsWindow::on_pbBox_clicked(QAbstractButton *b) {
 }
 settingsWindow::~settingsWindow() {
 }
+ 
