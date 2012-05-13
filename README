@@ -8,6 +8,8 @@ You need Qt development files to build this project having Netbeans is not
 essential but it certainly makes building and editing easier, otherwise you can 
 just use qmake on the *.pro files in nbproject directory.
 
+install libqt4-dev package
+
 goto the project directory and give these commands
 
 qmake nbproject/qt-Release.pro
