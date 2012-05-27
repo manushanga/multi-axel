@@ -65,6 +65,7 @@ public:
     float getSpeed();
     int getPercentage();
     string& getName();
+    string& getUrl();
     state_t getStatus();
 };
 

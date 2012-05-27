@@ -58,7 +58,7 @@ static void fsevent_mod(uint32_t mask) {
     string new_arg;
     tmp >> pid >> new_arg;
     if (main_window_up == true) {
-        mw->startNewDownload(QString("").fromStdString(new_arg));
+        mw->startNewDownload(QString("").fromStdString(new_arg), false);
     }
 }
 
@@ -91,8 +91,6 @@ int main(int argc, char *argv[]) {
         ofstream tmpw(TMP);
         if (argc > 1){
             tmpw << getpid() << " " << argv[1];
-            cout<<"ss"<<endl;
-            sleep(1);
         } else {
             tmpw << getpid();
         }
@@ -119,7 +117,7 @@ int main(int argc, char *argv[]) {
     signal(SIGQUIT, quit_handler);
     
     if (argc>1)
-        mw->startNewDownload(QString(argv[1]));
+        mw->startNewDownload(QString(argv[1]), false);
     int ret = app.exec();
     quit_handler(0);
     return ret;

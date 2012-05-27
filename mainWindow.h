@@ -20,7 +20,7 @@ class mainWindow : public QMainWindow {
     Q_OBJECT
 public:
     mainWindow(bool *up);
-    void startNewDownload(QString url);
+    void startNewDownload(QString url, bool paused);
     virtual ~mainWindow();
 private:
     Ui::mainWindow widget;
@@ -32,8 +32,8 @@ private:
     vector<Axel *> *axels;
     AxelSettings *settings;
     pthread_t th_updater;
-    void setSettings(AxelSettingsSave& as);
-    void getSettings(AxelSettingsSave& as);
+    void setSettings();
+    void getSettings();
     static void *thread_updater(void *obj);
 public slots:
     void on_actionNew_Download_triggered();
@@ -42,6 +42,7 @@ public slots:
     void on_pbAdd_clicked();
     void on_pbStart_clicked();
     void on_pbStop_clicked();
+    void on_pbRemove_clicked();
 };
 
 #endif	/* _MAINWINDOW_H */

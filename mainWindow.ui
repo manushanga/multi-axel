@@ -48,6 +48,13 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QPushButton" name="pbRemove">
+        <property name="text">
+         <string>Remove</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
    </layout>
@@ -58,7 +65,7 @@
      <x>0</x>
      <y>0</y>
      <width>389</width>
-     <height>27</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

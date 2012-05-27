@@ -236,6 +236,9 @@ void Axel::stop(){
 int Axel::getPercentage(){
     return this->percentage;
 }
+string& Axel::getUrl(){
+    return this->url;
+}
 string& Axel::getName(){
     return this->name;
 }

@@ -5,7 +5,7 @@
  * Created on May 12, 2012, 10:57 AM
  */
 
-#include <qt4/QtGui/qabstractbutton.h>
+#include <QAbstractButton>
 
 #include "settingsWindow.h"
 #include <iostream>

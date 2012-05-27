@@ -12,37 +12,44 @@
 #include <QInputDialog>
 #include <QStringList>
 #include <QItemSelectionModel>
-
+#include <QSettings>
 #include <fstream>
 #include <string>
 
 #include "settingsWindow.h"
 #include "aboutWindow.h"
 
-#define SETTINGS_FILE "/.multiaxel"
 
 enum cols{DL_NAME=0, DL_STATUS, DL_PERCENTAGE, DL_SPEED};
 
 QString colnames[4] = {"Name", "Status","Percentage","Speed"};
 QString statenames[6] = {"Downloading", "Paused", "Done", "Error", 
     "Unknown", "No multi-connections"};
-void mainWindow::getSettings(AxelSettingsSave& as){
-    as.numberOfConnections = this->settings->numberOfConnections;
-    as.maxSpeed = this->settings->maxSpeed;
-    strcpy(as.userAgent, this->settings->userAgent.c_str());
-    strcpy(as.httpProxy, this->settings->httpProxy.c_str());
-    strcpy(as.ftpProxy, this->settings->ftpProxy.c_str());
-    strcpy(as.outputPath, this->settings->outputPath.c_str());
-    strcpy(as.workingDirectory, this->settings->workingDirectory.c_str());
+void mainWindow::getSettings(){
+    bool ok;
+    QSettings qs("MaduraA","MultiAxel");
+    qs.beginGroup("Settings");
+    this->settings->httpProxy = qs.value("httpProxy").toString().toStdString();
+    this->settings->ftpProxy = qs.value("ftpProxy").toString().toStdString();
+    this->settings->maxSpeed = qs.value("maxSpeed").toInt(&ok);
+    this->settings->numberOfConnections = qs.value("numberOfConnections").toInt(&ok);
+    this->settings->userAgent = qs.value("userAgent").toString().toStdString();
+    this->settings->outputPath = qs.value("outputPath").toString().toStdString();
+    this->settings->workingDirectory = qs.value("workingDirectory").toString().toStdString();        
+    qs.endGroup();
 }
-void mainWindow::setSettings(AxelSettingsSave& as){
-    this->settings->httpProxy = string(as.httpProxy);
-    this->settings->ftpProxy = string(as.ftpProxy);
-    this->settings->maxSpeed = as.maxSpeed;
-    this->settings->numberOfConnections = as.numberOfConnections;
-    this->settings->userAgent =string(as.userAgent);
-    this->settings->outputPath = string(as.outputPath);
-    this->settings->workingDirectory = string(as.workingDirectory);
+void mainWindow::setSettings(){
+    QSettings qs("MaduraA","MultiAxel");
+    qs.beginGroup("Settings");
+    qs.setValue("httpProxy", QVariant(QString().fromStdString(this->settings->httpProxy)));
+    qs.setValue("ftpProxy",QVariant(QString().fromStdString(this->settings->ftpProxy)));
+    qs.setValue("maxSpeed",QVariant(this->settings->maxSpeed));
+    qs.setValue("numberOfConnections", QVariant(this->settings->numberOfConnections));
+    qs.setValue("userAgent",QVariant(QString().fromStdString(this->settings->userAgent)));
+    qs.setValue("outputPath",QVariant(QString().fromStdString(this->settings->outputPath)));
+    qs.setValue("workingDirectory", QVariant(QString().fromStdString(this->settings->workingDirectory)));
+    qs.endGroup();
+    qs.sync();
 }
 mainWindow::mainWindow(bool *up) {
     widget.setupUi(this);
@@ -69,18 +76,24 @@ mainWindow::mainWindow(bool *up) {
     listModel->setHorizontalHeaderLabels(*sl);
     widget.lstDownloads->setItemsExpandable(false);
     widget.lstDownloads->setModel(listModel);
-    string settings_path = string("/home/") + 
-        string(getenv("USER")) + string(SETTINGS_FILE) ;
-    ifstream s_file( settings_path.c_str() , ios::binary|ios::in);
+
     axels = new vector<Axel *>;
     this->settings = new AxelSettings;
-    DPRINT("Settings "<<settings_path.c_str());
-    if (s_file) {
-        AxelSettingsSave as;
-        s_file.read((char *) &as, sizeof(AxelSettingsSave));
-        s_file.close();
-        setSettings(as);
-        
+    QSettings qs("MaduraA","MultiAxel");
+    
+    if (qs.allKeys().size()!=0) {
+        getSettings();
+        int lst = qs.beginReadArray("List");
+        if (lst>0) {
+            bool ok;
+            for (int i=0;i<lst;i++) {
+                qs.setArrayIndex(i);
+                this->startNewDownload(qs.value("url").toString(), true);
+                int status = qs.value("status").toInt(&ok);
+                this->listModel->item(i, DL_STATUS )->setText( statenames[status]);
+            }
+        }
+        qs.endArray();
     } else {
         this->settings->httpProxy = "";
         this->settings->ftpProxy = "";
@@ -89,14 +102,10 @@ mainWindow::mainWindow(bool *up) {
         this->settings->userAgent = "";
         this->settings->outputPath = "";
         this->settings->workingDirectory = string("/home/") + string(getenv("USER")) +string("/Downloads");
-        ofstream s_file_w(settings_path.c_str(), ios::binary|ios::out);
-        AxelSettingsSave as;
-        getSettings(as);
         
-        s_file_w.write((char *)&as, sizeof(AxelSettingsSave));
-        s_file_w.close();
+        setSettings();
     }
-    s_file.close();
+
     QRect frect = frameGeometry();
     frect.moveCenter(QDesktopWidget().availableGeometry().center());
     move(frect.topLeft());
@@ -106,6 +115,12 @@ mainWindow::mainWindow(bool *up) {
 }
 mainWindow::~mainWindow() {
     pthread_cancel(this->th_updater);
+    QSettings qs("MaduraA","MultiAxel");
+    for (int i=0;i<this->axels->size();i++) {
+        qs.setArrayIndex(i);
+        qs.setValue("url", QVariant(QString().fromStdString(this->axels->at(i)->getUrl())));
+        qs.setValue("status", QVariant((int) this->axels->at(i)->getStatus()));
+    }
     delete trayIcon;
     delete trayMenu;
     delete trayNewDownload;
@@ -149,11 +164,13 @@ void *mainWindow::thread_updater(void * obj){
     }
     return NULL;
 }
-void mainWindow::startNewDownload(QString url){
-    if (url.trimmed().size() == 0 )
+void mainWindow::startNewDownload(QString url, bool paused){
+    url = url.trimmed();
+    if (url.size() == 0 )
         return;
     Axel *a = new Axel(url.toStdString(), *this->settings);
-    a->start();
+    if (paused == false)
+        a->start();
     this->listModel->setItem(axels->size(), DL_NAME, new QStandardItem());
     this->listModel->setItem(axels->size(), DL_STATUS, new QStandardItem());
     this->listModel->setItem(axels->size(), DL_PERCENTAGE, new QStandardItem());
@@ -181,23 +198,25 @@ void mainWindow::on_actionSettings_triggered(){
     settingsWindow sw(this->settings);
     sw.setModal(true);
     sw.exec();
-    string settings_path = string("/home/") + 
-        string(getenv("USER")) + string(SETTINGS_FILE) ;
-    
-    ofstream s_file_w(settings_path.c_str(), ios::binary|ios::out);
-    AxelSettingsSave as;
-    getSettings(as);
 
-    s_file_w.write((char *)&as, sizeof(AxelSettingsSave));
-    s_file_w.close();
-    
+    setSettings();
 }
 void mainWindow::on_actionNew_Download_triggered(){
     bool ok;
-    this->startNewDownload(QInputDialog::getText(this, tr("Add new URL"), tr("URL"), QLineEdit::Normal , tr(""), &ok));
+    this->startNewDownload(QInputDialog::getText(this, tr("Add new URL"), tr("URL"), QLineEdit::Normal , tr(""), &ok), false);
 }
 void mainWindow::on_pbAdd_clicked(){
     on_actionNew_Download_triggered();
+}
+void mainWindow::on_pbRemove_clicked(){
+    QItemSelectionModel *sm = widget.lstDownloads->selectionModel();
+    if (sm->selectedIndexes().size() == 0)
+        return;
+    QModelIndex qi = sm->selectedRows(0)[0];
+  
+    this->axels->at(qi.row())->stop();
+    this->axels->erase(this->axels->begin() + qi.row());
+    this->listModel->takeRow(qi.row()).clear();
 }
 void mainWindow::on_actionAbout_triggered(){
     aboutWindow ab;
