@@ -116,11 +116,14 @@ mainWindow::mainWindow(bool *up) {
 mainWindow::~mainWindow() {
     pthread_cancel(this->th_updater);
     QSettings qs("MaduraA","MultiAxel");
+    qs.beginWriteArray("List",this->axels->size() );
     for (int i=0;i<this->axels->size();i++) {
         qs.setArrayIndex(i);
         qs.setValue("url", QVariant(QString().fromStdString(this->axels->at(i)->getUrl())));
         qs.setValue("status", QVariant((int) this->axels->at(i)->getStatus()));
     }
+    qs.endArray();
+    qs.sync();
     delete trayIcon;
     delete trayMenu;
     delete trayNewDownload;
