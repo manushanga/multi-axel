@@ -4,7 +4,10 @@
  *
  * Created on April 16, 2012, 8:02 PM
  */
+#include <sys/types.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <semaphore.h>
 
 #include "mainWindow.h"
 #include <QDesktopWidget>
@@ -18,7 +21,6 @@
 
 #include "settingsWindow.h"
 #include "aboutWindow.h"
-
 
 enum cols{DL_NAME=0, DL_STATUS, DL_PERCENTAGE, DL_SPEED};
 
@@ -34,7 +36,6 @@ void mainWindow::getSettings(){
     this->settings->maxSpeed = qs.value("maxSpeed").toInt(&ok);
     this->settings->numberOfConnections = qs.value("numberOfConnections").toInt(&ok);
     this->settings->userAgent = qs.value("userAgent").toString().toStdString();
-    this->settings->outputPath = qs.value("outputPath").toString().toStdString();
     this->settings->workingDirectory = qs.value("workingDirectory").toString().toStdString();        
     qs.endGroup();
 }
@@ -46,7 +47,6 @@ void mainWindow::setSettings(){
     qs.setValue("maxSpeed",QVariant(this->settings->maxSpeed));
     qs.setValue("numberOfConnections", QVariant(this->settings->numberOfConnections));
     qs.setValue("userAgent",QVariant(QString().fromStdString(this->settings->userAgent)));
-    qs.setValue("outputPath",QVariant(QString().fromStdString(this->settings->outputPath)));
     qs.setValue("workingDirectory", QVariant(QString().fromStdString(this->settings->workingDirectory)));
     qs.endGroup();
     qs.sync();
@@ -100,7 +100,6 @@ mainWindow::mainWindow(bool *up) {
         this->settings->maxSpeed = 0;
         this->settings->numberOfConnections = 10;
         this->settings->userAgent = "";
-        this->settings->outputPath = "";
         this->settings->workingDirectory = string("/home/") + string(getenv("USER")) +string("/Downloads");
         
         setSettings();
@@ -112,6 +111,7 @@ mainWindow::mainWindow(bool *up) {
 
     pthread_create(&this->th_updater, NULL, &mainWindow::thread_updater, this);
     *up = true;
+    sem_init(&this->update_lock, 0, 1);
 }
 mainWindow::~mainWindow() {
     pthread_cancel(this->th_updater);
@@ -134,6 +134,7 @@ mainWindow::~mainWindow() {
 void *mainWindow::thread_updater(void * obj){
     mainWindow *w = (mainWindow *) obj;
     while (1) {
+        sem_wait(&w->update_lock);
         if (w->axels->size()>0 ){
             for (size_t row=0;row<w->axels->size();row++) {
                 Axel *a = w->axels->at(row);
@@ -163,6 +164,7 @@ void *mainWindow::thread_updater(void * obj){
                 }
             }          
         }
+        sem_post(&w->update_lock);
         usleep(900);
     }
     return NULL;
@@ -171,6 +173,7 @@ void mainWindow::startNewDownload(QString url, bool paused){
     url = url.trimmed();
     if (url.size() == 0 )
         return;
+    sem_wait(&this->update_lock);
     Axel *a = new Axel(url.toStdString(), *this->settings);
     if (paused == false)
         a->start();
@@ -180,6 +183,7 @@ void mainWindow::startNewDownload(QString url, bool paused){
     this->listModel->setItem(axels->size(), DL_SPEED, new QStandardItem());
     this->listModel->item(axels->size(), DL_NAME)->setText(QString::fromStdString(a->getName()));
     axels->push_back(a);
+    sem_post(&this->update_lock);
 }
 void mainWindow::on_pbStart_clicked(){
     QItemSelectionModel *sm = widget.lstDownloads->selectionModel();
@@ -216,10 +220,11 @@ void mainWindow::on_pbRemove_clicked(){
     if (sm->selectedIndexes().size() == 0)
         return;
     QModelIndex qi = sm->selectedRows(0)[0];
-  
+    sem_wait(&this->update_lock);
     this->axels->at(qi.row())->stop();
     this->axels->erase(this->axels->begin() + qi.row());
-    this->listModel->takeRow(qi.row()).clear();
+    this->listModel->removeRow(qi.row());
+    sem_post(&this->update_lock);
 }
 void mainWindow::on_actionAbout_triggered(){
     aboutWindow ab;

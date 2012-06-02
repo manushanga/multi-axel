@@ -10,6 +10,8 @@
 
 #include "ui_mainWindow.h"
 
+#include <semaphore.h>
+
 #include "QSystemTrayIcon"
 #include <QMenu>
 #include <QAction>
@@ -35,6 +37,7 @@ private:
     void setSettings();
     void getSettings();
     static void *thread_updater(void *obj);
+    sem_t update_lock;
 public slots:
     void on_actionNew_Download_triggered();
     void on_actionAbout_triggered();

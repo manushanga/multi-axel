@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainWindow.ui'
 **
-** Created: Sun May 27 23:29:35 2012
+** Created: Fri Jun 1 21:02:29 2012
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -130,7 +130,7 @@ public:
         actionAbout->setText(QApplication::translate("mainWindow", "About", 0, QApplication::UnicodeUTF8));
         actionSettings->setText(QApplication::translate("mainWindow", "Settings", 0, QApplication::UnicodeUTF8));
         pbAdd->setText(QApplication::translate("mainWindow", "Add", 0, QApplication::UnicodeUTF8));
-        pbStart->setText(QApplication::translate("mainWindow", "Start", 0, QApplication::UnicodeUTF8));
+        pbStart->setText(QApplication::translate("mainWindow", "Start/Resume", 0, QApplication::UnicodeUTF8));
         pbStop->setText(QApplication::translate("mainWindow", "Stop", 0, QApplication::UnicodeUTF8));
         pbRemove->setText(QApplication::translate("mainWindow", "Remove", 0, QApplication::UnicodeUTF8));
         menuFile->setTitle(QApplication::translate("mainWindow", "File", 0, QApplication::UnicodeUTF8));

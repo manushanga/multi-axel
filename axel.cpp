@@ -32,13 +32,9 @@ Axel::Axel(string url, AxelSettings& settings){
     if (settings.userAgent.size() != 0) {
         args->push_back("-U");
         args->push_back(settings.userAgent);
-    }    
-    if (settings.outputPath.size() != 0) {
-        args->push_back("-o");
-        args->push_back(settings.outputPath);
-    }
+    }   
     
-    args->push_back(url);
+    
    
     if (settings.httpProxy.size() != 0) {
         this->httpProxy = string(settings.httpProxy);
@@ -62,6 +58,12 @@ Axel::Axel(string url, AxelSettings& settings){
     } else {
         this->name = url.substr(p+1);
     }
+    this->name.resize(254);
+    args->push_back("-o");
+    args->push_back(this->name);
+    
+    args->push_back(url);
+    DPRINT(this->name);
 }
 void *Axel::threaded_read(void *obj){
     DPRINT("in threadd");
@@ -227,9 +229,9 @@ void Axel::start(){
     }
 }
 void Axel::stop(){
-    if (this->state != AXEL_PAUSED){
+    if (this->state != AXEL_PAUSED && this->state != AXEL_ERROR && this->state != AXEL_DONE){
         close(this->out_fd);
-        kill(this->pid, SIGINT);
+        kill(this->pid, SIGQUIT);
         this->pid = 0;
     }
 }
@@ -238,6 +240,9 @@ int Axel::getPercentage(){
 }
 string& Axel::getUrl(){
     return this->url;
+}
+string Axel::getOutput(){
+    return this->workingdir + string("/") + this->name;
 }
 string& Axel::getName(){
     return this->name;
