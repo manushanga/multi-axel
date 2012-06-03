@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#define DEBUG
 #ifdef DEBUG
 	#include <iostream>
 	#define DPRINT(...) std::cout<<__VA_ARGS__<<endl
@@ -20,7 +19,7 @@
 #endif
 
 using namespace std;
-enum state_t{ AXEL_DOWNLOADING=0, AXEL_PAUSED, AXEL_DONE, AXEL_ERROR, AXEL_UNKNOWN, AXEL_NOMULTI };
+enum state_t{ AXEL_DOWNLOADING=0, AXEL_PAUSED, AXEL_DONE, AXEL_ERROR, AXEL_UNKNOWN, AXEL_NOMULTI, AXEL_NOTFOUND };
 
 typedef struct _AxelSettings{
     int numberOfConnections;
@@ -38,12 +37,11 @@ private:
     pid_t pid;
     string httpProxy;
     string ftpProxy;
-    
+    char speed[10];
     vector<string>* args;
     /* read only for other than the reading thread */
     int out_fd;
     state_t state;
-    float speed;
     int percentage;
     string workingdir;
     static void *threaded_read(void *obj);
@@ -52,7 +50,7 @@ public:
     void start();
     void stop();
     bool isActive();
-    float getSpeed();
+    char *getSpeed();
     int getPercentage();
     string& getName();
     string& getUrl();

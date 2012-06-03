@@ -25,8 +25,8 @@
 enum cols{DL_NAME=0, DL_STATUS, DL_PERCENTAGE, DL_SPEED};
 
 QString colnames[4] = {"Name", "Status","Percentage","Speed"};
-QString statenames[6] = {"Downloading", "Paused", "Done", "Error", 
-    "Unknown", "No multi-connections"};
+QString statenames[7] = {"Downloading", "Paused", "Done", "Error", 
+    "Unknown", "Downloading(not resumable)", "File not found"};
 void mainWindow::getSettings(){
     bool ok;
     QSettings qs("MaduraA","MultiAxel");
@@ -117,7 +117,7 @@ mainWindow::~mainWindow() {
     pthread_cancel(this->th_updater);
     QSettings qs("MaduraA","MultiAxel");
     qs.beginWriteArray("List",this->axels->size() );
-    for (int i=0;i<this->axels->size();i++) {
+    for (size_t i=0;i<this->axels->size();i++) {
         qs.setArrayIndex(i);
         qs.setValue("url", QVariant(QString().fromStdString(this->axels->at(i)->getUrl())));
         qs.setValue("status", QVariant((int) this->axels->at(i)->getStatus()));
@@ -142,7 +142,7 @@ void *mainWindow::thread_updater(void * obj){
                 w->listModel-> item(row, DL_STATUS)->setText(statenames[status]);
                 if (status == AXEL_DOWNLOADING || status == AXEL_NOMULTI) {
                     QString qa;
-                    qa.sprintf("%f",a->getSpeed());
+                    qa.sprintf("%s",a->getSpeed());
                     w->listModel-> item(row, DL_SPEED)->setText(qa);
 
                     qa.sprintf("%d",a->getPercentage());
@@ -156,7 +156,7 @@ void *mainWindow::thread_updater(void * obj){
                     w->listModel-> item(row, DL_PERCENTAGE)->setText(qa);                
                 } else if (status == AXEL_DONE) {
                     QString qa;
-                    qa.sprintf("%f", 0.0f );
+                    qa.sprintf("N/A");
                     w->listModel-> item(row, DL_SPEED)->setText(qa);
                     
                     qa.sprintf("%d", 100);

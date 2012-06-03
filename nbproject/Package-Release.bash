@@ -14,7 +14,7 @@ NBTMPDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tmp-packaging
 TMPDIRNAME=tmp-packaging
 OUTPUT_PATH=${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/multi-axel
 OUTPUT_BASENAME=multi-axel
-PACKAGE_TOP_DIR=multi-axel/
+PACKAGE_TOP_DIR=/usr/
 
 # Functions
 function checkReturnCode
@@ -59,16 +59,33 @@ mkdir -p ${NBTMPDIR}
 
 # Copy files and create directories and links
 cd "${TOP}"
-makeDirectory "${NBTMPDIR}/multi-axel/bin"
+makeDirectory "${NBTMPDIR}//usr/bin"
 copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}" 0755
 
 
-# Generate tar file
+# Create control file
 cd "${TOP}"
-rm -f ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/multi-axel.tar
-cd ${NBTMPDIR}
-tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/multi-axel.tar *
+CONTROL_FILE=${NBTMPDIR}/DEBIAN/control
+rm -f ${CONTROL_FILE}
+mkdir -p ${NBTMPDIR}/DEBIAN
+
+cd "${TOP}"
+echo 'Package: multi-axel' >> ${CONTROL_FILE}
+echo 'Version: 1.0' >> ${CONTROL_FILE}
+echo 'Architecture: amd64' >> ${CONTROL_FILE}
+echo 'Maintainer: madura' >> ${CONTROL_FILE}
+echo 'Description: ...' >> ${CONTROL_FILE}
+
+# Create Debian Package
+cd "${TOP}"
+cd "${NBTMPDIR}/.."
+dpkg-deb  --build ${TMPDIRNAME}
 checkReturnCode
+cd "${TOP}"
+mkdir -p  ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package
+mv ${NBTMPDIR}.deb ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/multi-axel.deb
+checkReturnCode
+echo Debian: ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/multi-axel.deb
 
 # Cleanup
 cd "${TOP}"

@@ -12,6 +12,10 @@ install libqt4-dev package
 
 goto the project directory and give these commands
 
+for compiling for 32bit on 64bit host use,
+export QMAKESPEC=linux-g++-32
+if not just continue with qmake
+
 qmake nbproject/qt-Release.pro
 make
 
@@ -21,4 +25,18 @@ Usage
 =====
 
 You MUST have axel installed. This program works with Linux kernels only, it 
-uses inotify to check for file modification.
+uses inotify to check for file modification. Any changse to make it cross platform
+can be added to fsevent.c
+
+Known Issues
+============
+
+Some files end in "Error" state when tried to download after stopping
+    This is because axel doesn't make .st files for some downloads specially when
+    downloading non-resumable files. You can't resume these files at all, these 
+    will have the state "Downloading(not resumable)"
+
+Some files just end in "Error" after sometime
+    Some sites ban download accelarators, but they wait until they detect activity
+    similar to an accelarator, the only way to fix this is to find another mirror
+    or just download with 1 connection

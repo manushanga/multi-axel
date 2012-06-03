@@ -1,3 +1,7 @@
+/* fsevent.c is Linux only at the moment please feel free to support other POSIX
+ * operating systems by using defines here, do not use them elsewhere all other
+ * files other than this can be compiled on any POSIX platform
+ */
 #include "fsevent.h"
 #include <poll.h>
 #include <unistd.h>

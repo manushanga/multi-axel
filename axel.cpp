@@ -34,7 +34,6 @@ Axel::Axel(string url, AxelSettings& settings){
         args->push_back(settings.userAgent);
     }   
     
-    
    
     if (settings.httpProxy.size() != 0) {
         this->httpProxy = string(settings.httpProxy);
@@ -47,10 +46,11 @@ Axel::Axel(string url, AxelSettings& settings){
     } else {
         this->workingdir = string("");
     }
+    this->speed[0]='0';
+    this->speed[1]='\0';
     
     this->pid = 0;
     this->state = AXEL_PAUSED;
-    this->speed = 0.0f;
     this->percentage = 0;
     size_t p = url.find_last_of('/');
     if (p==string::npos || p==url.length()-1){
@@ -58,7 +58,10 @@ Axel::Axel(string url, AxelSettings& settings){
     } else {
         this->name = url.substr(p+1);
     }
-    this->name.resize(254);
+    //this->name.resize(254,'\0');
+    if (this->name.size() > 254){
+        this->name = this->name.substr(0,254);
+    }
     args->push_back("-o");
     args->push_back(this->name);
     
@@ -89,12 +92,17 @@ void *Axel::threaded_read(void *obj){
     info.append(d, rd);
     DPRINT(rd);
     DPRINT(info.c_str());
-
+    
     /* if EOF if hit by now rd==-1 */
     
     if (rd > 0) {
         int bracket_set=0;
-        ax->state = AXEL_DOWNLOADING;
+        
+        if (info.find("Server unsupported",0) != string::npos) {
+            ax->state = AXEL_NOMULTI;
+        } else {
+            ax->state = AXEL_DOWNLOADING;
+        }
         rd = reader_read(ax->out_fd, d);
         
         while ( rd>0 ) {
@@ -116,8 +124,7 @@ void *Axel::threaded_read(void *obj){
                 } else if (d[i]==']'){
                     rec=0;
                     if (bracket_set == 1) {
-                        sp[sp_p-4]='\0';
-                        ax->speed = atof(sp);
+                        strcpy(ax->speed,sp);
                     } else if (sp[sp_p-1]=='%') {
                         sp[sp_p-1]='\0';
                         bracket_set=0;
@@ -134,7 +141,7 @@ void *Axel::threaded_read(void *obj){
                     }
                 }   
             }
-            usleep(200);
+            usleep(500);
             rd = reader_read(ax->out_fd, d);
         }
         string status_out;
@@ -153,10 +160,8 @@ void *Axel::threaded_read(void *obj){
             ax->state = AXEL_UNKNOWN;
         }
     } else {
-        if (info.find("Server unsupported",0) != string::npos) {
-            ax->state = AXEL_NOMULTI;
-        } else if (info.find("Unable to connect to server") != string::npos ) {
-            ax->state = AXEL_ERROR;
+        if (info.find("Unable to connect to server") != string::npos ) {
+            ax->state = AXEL_NOTFOUND;
         } else {
             ax->state = AXEL_ERROR;
         }
@@ -231,7 +236,7 @@ void Axel::start(){
 void Axel::stop(){
     if (this->state != AXEL_PAUSED && this->state != AXEL_ERROR && this->state != AXEL_DONE){
         close(this->out_fd);
-        kill(this->pid, SIGQUIT);
+        kill(this->pid, SIGINT);
         this->pid = 0;
     }
 }
@@ -247,7 +252,7 @@ string Axel::getOutput(){
 string& Axel::getName(){
     return this->name;
 }
-float Axel::getSpeed(){
+char *Axel::getSpeed(){
     return this->speed;
 }
 state_t Axel::getStatus(){
