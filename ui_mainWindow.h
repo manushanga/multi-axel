@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainWindow.ui'
 **
-** Created: Sun Jun 3 17:36:12 2012
+** Created: Mon Jun 4 20:13:28 2012
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -66,6 +66,7 @@ public:
         lstDownloads = new QTreeView(centralwidget);
         lstDownloads->setObjectName(QString::fromUtf8("lstDownloads"));
         lstDownloads->setRootIsDecorated(false);
+        lstDownloads->setExpandsOnDoubleClick(false);
 
         verticalLayout->addWidget(lstDownloads);
 

@@ -20,6 +20,9 @@
       <property name="rootIsDecorated">
        <bool>false</bool>
       </property>
+      <property name="expandsOnDoubleClick">
+       <bool>false</bool>
+      </property>
      </widget>
     </item>
     <item>

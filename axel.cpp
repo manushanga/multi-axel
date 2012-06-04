@@ -58,7 +58,6 @@ Axel::Axel(string url, AxelSettings& settings){
     } else {
         this->name = url.substr(p+1);
     }
-    //this->name.resize(254,'\0');
     if (this->name.size() > 254){
         this->name = this->name.substr(0,254);
     }
@@ -139,7 +138,7 @@ void *Axel::threaded_read(void *obj){
                     if (status_p==READER_BUFFER_SIZE*3){
                         status_p=0;
                     }
-                }   
+                }
             }
             usleep(500);
             rd = reader_read(ax->out_fd, d);

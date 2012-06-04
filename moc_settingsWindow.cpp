@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'settingsWindow.h'
 **
-** Created: Sun Jun 3 17:36:37 2012
+** Created: Mon Jun 4 20:13:50 2012
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.2)
 **
 ** WARNING! All changes made in this file will be lost!

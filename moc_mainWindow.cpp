@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'mainWindow.h'
 **
-** Created: Sun Jun 3 17:36:42 2012
+** Created: Mon Jun 4 20:13:55 2012
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.2)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,7 +23,7 @@ static const uint qt_meta_data_mainWindow[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       7,   14, // methods
+       8,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -38,6 +38,7 @@ static const uint qt_meta_data_mainWindow[] = {
      122,   11,   11,   11, 0x0a,
      143,   11,   11,   11, 0x0a,
      163,   11,   11,   11, 0x0a,
+     188,  185,   11,   11, 0x0a,
 
        0        // eod
 };
@@ -48,6 +49,7 @@ static const char qt_meta_stringdata_mainWindow[] = {
     "on_actionSettings_triggered()\0"
     "on_pbAdd_clicked()\0on_pbStart_clicked()\0"
     "on_pbStop_clicked()\0on_pbRemove_clicked()\0"
+    "qi\0on_lstDownloads_doubleClicked(QModelIndex)\0"
 };
 
 void mainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -63,10 +65,10 @@ void mainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 4: _t->on_pbStart_clicked(); break;
         case 5: _t->on_pbStop_clicked(); break;
         case 6: _t->on_pbRemove_clicked(); break;
+        case 7: _t->on_lstDownloads_doubleClicked((*reinterpret_cast< QModelIndex(*)>(_a[1]))); break;
         default: ;
         }
     }
-    Q_UNUSED(_a);
 }
 
 const QMetaObjectExtraData mainWindow::staticMetaObjectExtraData = {
@@ -101,9 +103,9 @@ int mainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 7)
+        if (_id < 8)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        _id -= 8;
     }
     return _id;
 }

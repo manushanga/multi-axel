@@ -16,6 +16,8 @@
 #include <QStringList>
 #include <QItemSelectionModel>
 #include <QSettings>
+#include <QProcess>
+
 #include <fstream>
 #include <string>
 
@@ -177,10 +179,13 @@ void mainWindow::startNewDownload(QString url, bool paused){
     Axel *a = new Axel(url.toStdString(), *this->settings);
     if (paused == false)
         a->start();
-    this->listModel->setItem(axels->size(), DL_NAME, new QStandardItem());
-    this->listModel->setItem(axels->size(), DL_STATUS, new QStandardItem());
-    this->listModel->setItem(axels->size(), DL_PERCENTAGE, new QStandardItem());
-    this->listModel->setItem(axels->size(), DL_SPEED, new QStandardItem());
+
+    for (int i=0;i<=DL_SPEED;i++) {
+        QStandardItem *qi = new QStandardItem();
+        qi->setEditable(false);
+        this->listModel->setItem(axels->size(), i, qi );
+    }
+
     this->listModel->item(axels->size(), DL_NAME)->setText(QString::fromStdString(a->getName()));
     axels->push_back(a);
     sem_post(&this->update_lock);
@@ -230,4 +235,11 @@ void mainWindow::on_actionAbout_triggered(){
     aboutWindow ab;
     ab.setModal(true);
     ab.exec();
+}
+void mainWindow::on_lstDownloads_doubleClicked(QModelIndex qi){
+    QProcess *p = new QProcess();
+    QString proc("xdg-open");
+    QString args = QString::fromStdString(this->axels->at(qi.row())->getOutput());
+    DPRINT(this->axels->at(qi.row())->getOutput());
+    p->start(proc, QStringList() << args);
 }

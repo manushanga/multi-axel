@@ -46,6 +46,7 @@ public slots:
     void on_pbStart_clicked();
     void on_pbStop_clicked();
     void on_pbRemove_clicked();
+    void on_lstDownloads_doubleClicked(QModelIndex qi);
 };
 
 #endif	/* _MAINWINDOW_H */
