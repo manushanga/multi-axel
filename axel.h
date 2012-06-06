@@ -10,7 +10,6 @@
 
 #include <string>
 #include <vector>
-
 #ifdef DEBUG
 	#include <iostream>
 	#define DPRINT(...) std::cout<<__VA_ARGS__<<endl
@@ -37,7 +36,7 @@ private:
     pid_t pid;
     string httpProxy;
     string ftpProxy;
-    char speed[10];
+    char speed[100];
     vector<string>* args;
     /* read only for other than the reading thread */
     int out_fd;
