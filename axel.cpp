@@ -136,8 +136,8 @@ void *Axel::threaded_read(void *obj){
                 } else if (d[i]==']'){
                     rec=0;
                     if (bracket_set == 1) {
-                        strncpy(ax->speed,sp,99);
-                        sp[99]='\0';  
+                        strncpy(ax->speed,sp,READER_BUFFER_SIZE);
+                        sp[READER_BUFFER_SIZE-1]='\0';  
                     } else if (sp[sp_p-1]=='%') {
                         sp[sp_p-1]='\0';
                         bracket_set=0;

@@ -85,7 +85,7 @@
         </asmTool>
       </compileType>
       <packaging>
-        <packType>Debian</packType>
+        <packType>Tar</packType>
         <packFileList>
           <packFileListElem type="File"
                             to="${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}"
@@ -94,13 +94,6 @@
                             owner="root"
                             group="bin"/>
         </packFileList>
-        <packInfoList>
-          <packInfoListElem name="Package" value="multi-axel" mandatory="true"/>
-          <packInfoListElem name="Version" value="1.0" mandatory="true"/>
-          <packInfoListElem name="Architecture" value="amd64" mandatory="false"/>
-          <packInfoListElem name="Maintainer" value="madura" mandatory="false"/>
-          <packInfoListElem name="Description" value="..." mandatory="false"/>
-        </packInfoList>
       </packaging>
     </conf>
   </confs>

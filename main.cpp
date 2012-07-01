@@ -82,8 +82,7 @@ int main(int argc, char *argv[]) {
 
     if (tmp) {
         pid_t pid;
-        string arg;
-        tmp >> pid >> arg;
+        tmp >> pid;
         tmp.close();
 
         if (argc > 1) {
@@ -101,7 +100,7 @@ int main(int argc, char *argv[]) {
         if (argc > 1){
             tmpw << getpid();
             for (int i=1;i<argc;i++)
-                tmpw<< " " << argv[1];
+                tmpw<< " " << argv[i];
         } else {
             tmpw << getpid();
         }
@@ -131,10 +130,14 @@ int main(int argc, char *argv[]) {
         int i=2;
         QStringList a;
         while (i<argc){
+            cout<<argv[i]<<endl;
             a.append(QString(argv[i]));
+            
             i++;
         }
+        
         mw->startNewDownload(QString(argv[1]), &a, false);
+        
     }
     int ret = app.exec();
     quit_handler(0);

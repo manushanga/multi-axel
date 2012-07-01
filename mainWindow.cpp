@@ -185,7 +185,7 @@ void mainWindow::startNewDownload(QString url, QStringList *sl, bool paused){
         return;
     
     if (sl!=NULL){
-        int i;
+        int i=0;
         while(i<sl->size()){
             if (sl->at(i).compare("-H") == 0 && i+1<sl->size()){
                 s.header = sl->at(i+1).toStdString();
