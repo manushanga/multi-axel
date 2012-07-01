@@ -22,7 +22,7 @@ class mainWindow : public QMainWindow {
     Q_OBJECT
 public:
     mainWindow(bool *up);
-    void startNewDownload(QString url, bool paused);
+    void startNewDownload(QString url, QStringList *sl, bool paused);
     virtual ~mainWindow();
 private:
     Ui::mainWindow widget;

@@ -55,10 +55,17 @@ static void quit_handler(int sig) {
 static void fsevent_mod(uint32_t mask) {
     ifstream tmp(TMP);
     pid_t pid;
-    string new_arg;
+    string new_arg, new_arg1;
     tmp >> pid >> new_arg;
+    QStringList a;
+
+    while (tmp.eof() == false){
+        tmp>>new_arg1;
+        DPRINT(new_arg1);
+        a.append(QString("").fromStdString(new_arg1));      
+    }
     if (main_window_up == true) {
-        mw->startNewDownload(QString("").fromStdString(new_arg), false);
+        mw->startNewDownload(QString("").fromStdString(new_arg), &a, false);
     }
 }
 
@@ -81,7 +88,9 @@ int main(int argc, char *argv[]) {
 
         if (argc > 1) {
             ofstream tmpw(TMP);
-            tmpw << pid << " " << argv[1];
+            tmpw << pid;
+            for (int i=1;i<argc;i++)
+                tmpw<< " " << argv[i];
             tmpw.close();
         }
         cout << "Another instance detected." << endl;
@@ -90,7 +99,9 @@ int main(int argc, char *argv[]) {
         tmp.close();
         ofstream tmpw(TMP);
         if (argc > 1){
-            tmpw << getpid() << " " << argv[1];
+            tmpw << getpid();
+            for (int i=1;i<argc;i++)
+                tmpw<< " " << argv[1];
         } else {
             tmpw << getpid();
         }
@@ -116,8 +127,15 @@ int main(int argc, char *argv[]) {
     signal(SIGINT, quit_handler);
     signal(SIGQUIT, quit_handler);
     
-    if (argc>1)
-        mw->startNewDownload(QString(argv[1]), false);
+    if (argc>1){
+        int i=2;
+        QStringList a;
+        while (i<argc){
+            a.append(QString(argv[i]));
+            i++;
+        }
+        mw->startNewDownload(QString(argv[1]), &a, false);
+    }
     int ret = app.exec();
     quit_handler(0);
     return ret;

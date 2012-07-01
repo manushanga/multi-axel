@@ -15,16 +15,17 @@
 #include "reader.h"
 Axel::Axel(string url, AxelSettings& settings){
     this->url = url;
-    stringstream s;
     args = new vector<string>;
     args->push_back("axel");
 
     if (settings.numberOfConnections != 0) {
+        stringstream s;
         s<<settings.numberOfConnections;
         args->push_back("-n");
         args->push_back(s.str());
     }
     if (settings.maxSpeed != 0) {
+        stringstream s;
         args->push_back("-s");
         s<<settings.maxSpeed;
         args->push_back(s.str());
@@ -33,7 +34,10 @@ Axel::Axel(string url, AxelSettings& settings){
         args->push_back("-U");
         args->push_back(settings.userAgent);
     }   
-    
+    if (settings.header.size() != 0) {
+        args->push_back("-H");
+        args->push_back(settings.header);
+    } 
    
     if (settings.httpProxy.size() != 0) {
         this->httpProxy = string(settings.httpProxy);
@@ -76,6 +80,7 @@ void *Axel::threaded_read(void *obj){
     int rec=0,sp_p=0,status_p=0;
     
     Axel *ax=(Axel *)obj;
+    ax->state = AXEL_START;
     
     int rd = reader_read(ax->out_fd, d);
     while (rd> 0 && info.find("Starting download",0)==string::npos) {
@@ -89,6 +94,14 @@ void *Axel::threaded_read(void *obj){
         rd = reader_read(ax->out_fd, d);
     }
     info.append(d, rd);
+    
+    int fsize_pos = info.find("File size:",0) +10;
+    if (fsize_pos < 0){
+        strcpy(ax->filesize,"Not supported.");
+    } else {
+        strcpy(ax->filesize, info.substr(fsize_pos, info.find("\n", fsize_pos) - fsize_pos).c_str()); 
+    }
+    
     DPRINT(rd);
     DPRINT(info.c_str());
     
@@ -200,6 +213,7 @@ void Axel::start(){
             }
             for (i=0;i<args->size();i++) {
                 arr[i]=(char *)this->args->at(i).c_str();
+                DPRINT(arr[i]);
             }
             arr[i] = NULL;
             string prot = this->url.substr(0, 5);
@@ -254,6 +268,9 @@ string& Axel::getName(){
 }
 char *Axel::getSpeed(){
     return this->speed;
+}
+char *Axel::getSize(){
+    return this->filesize;
 }
 state_t Axel::getStatus(){
     return this->state;

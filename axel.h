@@ -18,7 +18,7 @@
 #endif
 
 using namespace std;
-enum state_t{ AXEL_DOWNLOADING=0, AXEL_PAUSED, AXEL_DONE, AXEL_ERROR, AXEL_UNKNOWN, AXEL_NOMULTI, AXEL_NOTFOUND };
+enum state_t{ AXEL_DOWNLOADING=0, AXEL_PAUSED, AXEL_DONE, AXEL_ERROR, AXEL_UNKNOWN, AXEL_NOMULTI, AXEL_NOTFOUND, AXEL_START };
 
 typedef struct _AxelSettings{
     int numberOfConnections;
@@ -27,6 +27,7 @@ typedef struct _AxelSettings{
     string httpProxy;
     string ftpProxy;
     string workingDirectory;
+    string header;
 }AxelSettings;
 
 class Axel {
@@ -37,6 +38,7 @@ private:
     string httpProxy;
     string ftpProxy;
     char speed[100];
+    char filesize[512];
     vector<string>* args;
     /* read only for other than the reading thread */
     int out_fd;
@@ -50,6 +52,7 @@ public:
     void stop();
     bool isActive();
     char *getSpeed();
+    char *getSize();
     int getPercentage();
     string& getName();
     string& getUrl();

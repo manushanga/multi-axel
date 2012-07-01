@@ -24,11 +24,11 @@
 #include "settingsWindow.h"
 #include "aboutWindow.h"
 
-enum cols{DL_NAME=0, DL_STATUS, DL_PERCENTAGE, DL_SPEED};
+enum cols{DL_NAME=0, DL_STATUS, DL_PERCENTAGE, DL_SPEED, DL_SIZE};
 
-QString colnames[4] = {"Name", "Status","Percentage","Speed"};
-QString statenames[7] = {"Downloading", "Paused", "Done", "Error", 
-    "Unknown", "Downloading(not resumable)", "File not found"};
+QString colnames[5] = {"Name", "Status","Percentage","Speed","Size"};
+QString statenames[8] = {"Downloading", "Paused", "Done", "Error", 
+    "Unknown", "Downloading(not resumable)", "File not found","Starting"};
 void mainWindow::getSettings(){
     bool ok;
     QSettings qs("MaduraA","MultiAxel");
@@ -72,9 +72,9 @@ mainWindow::mainWindow(bool *up) {
     trayIcon->show();
     listModel = new QStandardItemModel();
     
-    listModel->setColumnCount(4);
+    listModel->setColumnCount(5);
     QStringList *sl= new QStringList();
-    *sl<<colnames[0]<<colnames[1]<<colnames[2]<<colnames[3];
+    *sl<<colnames[0]<<colnames[1]<<colnames[2]<<colnames[3]<<colnames[4];
     listModel->setHorizontalHeaderLabels(*sl);
     widget.lstDownloads->setItemsExpandable(false);
     widget.lstDownloads->setModel(listModel);
@@ -90,7 +90,7 @@ mainWindow::mainWindow(bool *up) {
             bool ok;
             for (int i=0;i<lst;i++) {
                 qs.setArrayIndex(i);
-                this->startNewDownload(qs.value("url").toString(), true);
+                this->startNewDownload(qs.value("url").toString(), NULL, true);
                 int status = qs.value("status").toInt(&ok);
                 this->listModel->item(i, DL_STATUS )->setText( statenames[status]);
             }
@@ -149,13 +149,18 @@ void *mainWindow::thread_updater(void * obj){
 
                     qa.sprintf("%d",a->getPercentage());
                     w->listModel-> item(row, DL_PERCENTAGE)->setText(qa);
+                    
+                    qa.sprintf("%s", a->getSize());
+                    w->listModel-> item(row, DL_SIZE)->setText(qa); 
                 } else if (status == AXEL_UNKNOWN || status == AXEL_ERROR) {
                     QString qa;
                     qa.sprintf("%f", 0.0f );
                     w->listModel-> item(row, DL_SPEED)->setText(qa);
                     
                     qa.sprintf("%d", 0);
-                    w->listModel-> item(row, DL_PERCENTAGE)->setText(qa);                
+                    w->listModel-> item(row, DL_PERCENTAGE)->setText(qa);
+                    
+                    
                 } else if (status == AXEL_DONE) {
                     QString qa;
                     qa.sprintf("N/A");
@@ -167,20 +172,44 @@ void *mainWindow::thread_updater(void * obj){
             }          
         }
         sem_post(&w->update_lock);
-        usleep(900);
+        usleep(500000);
     }
     return NULL;
 }
-void mainWindow::startNewDownload(QString url, bool paused){
+void mainWindow::startNewDownload(QString url, QStringList *sl, bool paused){
     url = url.trimmed();
+    AxelSettings s;
+    
+    memcpy(&s, this->settings, sizeof(AxelSettings));
     if (url.size() == 0 )
         return;
+    
+    if (sl!=NULL){
+        int i;
+        while(i<sl->size()){
+            if (sl->at(i).compare("-H") == 0 && i+1<sl->size()){
+                s.header = sl->at(i+1).toStdString();
+                i+=2;
+            } else if (sl->at(i).compare("-s") == 0 && i+1<sl->size()){
+                bool ok;
+                s.maxSpeed = sl->at(i+1).toInt(&ok);
+                i+=2;
+            } else if (sl->at(i).compare("-n") == 0 && i+1<sl->size()){
+                bool ok;
+                s.numberOfConnections = sl->at(i+1).toInt(&ok);
+                i+=2;
+            } else {
+                i++;
+            }
+        }
+    }
+
     sem_wait(&this->update_lock);
-    Axel *a = new Axel(url.toStdString(), *this->settings);
+    Axel *a = new Axel(url.toStdString(), s);
     if (paused == false)
         a->start();
 
-    for (int i=0;i<=DL_SPEED;i++) {
+    for (int i=0;i<=DL_SIZE;i++) {
         QStandardItem *qi = new QStandardItem();
         qi->setEditable(false);
         this->listModel->setItem(axels->size(), i, qi );
@@ -215,7 +244,7 @@ void mainWindow::on_actionSettings_triggered(){
 }
 void mainWindow::on_actionNew_Download_triggered(){
     bool ok;
-    this->startNewDownload(QInputDialog::getText(this, tr("Add new URL"), tr("URL"), QLineEdit::Normal , tr(""), &ok), false);
+    this->startNewDownload(QInputDialog::getText(this, tr("Add new URL"), tr("URL"), QLineEdit::Normal , tr(""), &ok), NULL, false);
 }
 void mainWindow::on_pbAdd_clicked(){
     on_actionNew_Download_triggered();
