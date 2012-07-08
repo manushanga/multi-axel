@@ -84,7 +84,7 @@ mainWindow::mainWindow(bool *up) {
     this->settings = new AxelSettings;
     QSettings qs("MaduraA","MultiAxel");
     
-    DPRINT("sem_init"<<sem_init(&this->update_lock, 0, 1));
+    sem_init(&this->update_lock, 0, 1);
     
     if (qs.allKeys().size()!=0) {
         getSettings();
