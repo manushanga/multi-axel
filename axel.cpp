@@ -40,13 +40,13 @@ Axel::Axel(string url, AxelSettings& settings){
     } 
    
     if (settings.httpProxy.size() != 0) {
-        this->httpProxy = string(settings.httpProxy);
+        this->httpProxy = string(settings.httpProxy.c_str());
     } else {
         this->httpProxy = string("");
     }
     
     if (settings.workingDirectory.size() != 0) {
-        this->workingdir = string(settings.workingDirectory);
+        this->workingdir = string(settings.workingDirectory.c_str());
     } else {
         this->workingdir = string("");
     }
@@ -73,9 +73,9 @@ Axel::Axel(string url, AxelSettings& settings){
 }
 void *Axel::threaded_read(void *obj){
     DPRINT("in threadd");
-    char d[READER_BUFFER_SIZE];
-    char sp[READER_BUFFER_SIZE];
-    char status[READER_BUFFER_SIZE*3];
+    char d[READER_BUFFER_SIZE]="";
+    char sp[READER_BUFFER_SIZE]="";
+    char status[READER_BUFFER_SIZE*3]="";
     string info;
     int rec=0,sp_p=0,status_p=0;
     
@@ -211,6 +211,7 @@ void Axel::start(){
             if (workingdir.size() != 0){
                 chdir(workingdir.c_str());
             }
+            
             for (i=0;i<args->size();i++) {
                 arr[i]=(char *)this->args->at(i).c_str();
                 DPRINT(arr[i]);
@@ -219,13 +220,16 @@ void Axel::start(){
             string prot = this->url.substr(0, 5);
             std::transform(prot.begin(), prot.end(), prot.begin(), ::tolower);
             if (prot.find("http",0) != string::npos && this->httpProxy.size() != 0  ){
-                char *env=(char *) string("http_proxy=http://").append(this->httpProxy).c_str();
+                char env[256];
+                sprintf(env,"http_proxy=http://%s", this->httpProxy.c_str());
                 char* arre[2];
                 arre[0] = env;
                 arre[1] = NULL;
+                
                 execvpe("axel", arr, arre);
             } else if (prot.find("ftp",0) != string::npos && this->ftpProxy.size() != 0  ){
-                char *env=(char *) string("ftp_proxy=ftp://").append(this->ftpProxy).c_str();
+                char env[256];
+                sprintf(env,"http_proxy=http://%s", this->httpProxy.c_str());
                 char* arre[2];
                 arre[0] = env;
                 arre[1] = NULL;
@@ -250,7 +254,7 @@ void Axel::start(){
 void Axel::stop(){
     if (this->state != AXEL_PAUSED && this->state != AXEL_ERROR && this->state != AXEL_DONE){
         close(this->out_fd);
-        kill(this->pid, SIGINT);
+        kill(this->pid, SIGQUIT);
         this->pid = 0;
     }
 }

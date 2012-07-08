@@ -41,8 +41,7 @@ static void quit_handler(int sig) {
     ifstream tmpd(TMP);
     if (tmpd) {
         pid_t pid;
-        string arg;
-        tmpd >> pid >> arg;
+        tmpd >> pid;
         tmpd.close();
         fsevent_remove_watch(&g);
         if (pid == getpid()) {
@@ -122,7 +121,6 @@ int main(int argc, char *argv[]) {
     sa.sa_handler = child_handler;
     sigaction(SIGCHLD, &sa, NULL);
 
-    signal(SIGKILL, quit_handler);
     signal(SIGINT, quit_handler);
     signal(SIGQUIT, quit_handler);
     

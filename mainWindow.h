@@ -25,6 +25,7 @@ public:
     void startNewDownload(QString url, QStringList *sl, bool paused);
     virtual ~mainWindow();
 private:
+    AxelSettings *settings;
     Ui::mainWindow widget;
     QSystemTrayIcon *trayIcon;
     QMenu *trayMenu;
@@ -32,7 +33,6 @@ private:
     QAction *trayQuit;
     QStandardItemModel *listModel;
     vector<Axel *> *axels;
-    AxelSettings *settings;
     pthread_t th_updater;
     void setSettings();
     void getSettings();

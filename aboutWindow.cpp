@@ -9,6 +9,9 @@
 
 aboutWindow::aboutWindow() {
     widget.setupUi(this);
+    QString a;
+    a.sprintf("<p align=\"center\">Build date: %s at %s</p>",__DATE__, __TIME__);
+    widget.lblCompileDate->setText(a);
 }
 
 aboutWindow::~aboutWindow() {

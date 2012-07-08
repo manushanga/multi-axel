@@ -14,11 +14,13 @@
 class settingsWindow : public QDialog {
     Q_OBJECT
 public:
-    settingsWindow(AxelSettings *s);
+    settingsWindow();
     virtual ~settingsWindow();
 private:
     Ui::settingsWindow widget;
     AxelSettings *settings;
+    void getSettings();
+    void setSettings();
 public slots:
     void on_pbBox_clicked(QAbstractButton *b);
 };

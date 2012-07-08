@@ -6,25 +6,53 @@
  */
 
 #include <QAbstractButton>
+#include <QSettings>
 
 #include "settingsWindow.h"
 #include <iostream>
+
 using namespace std;
-settingsWindow::settingsWindow(AxelSettings *s) {
+void settingsWindow::getSettings(){
+    bool ok;
+    QSettings qs("MaduraA","MultiAxel");
+    qs.beginGroup("Settings");
+    this->settings->httpProxy = qs.value("httpProxy").toString().toStdString();
+    this->settings->ftpProxy = qs.value("ftpProxy").toString().toStdString();
+    this->settings->maxSpeed = qs.value("maxSpeed").toInt(&ok);
+    this->settings->numberOfConnections = qs.value("numberOfConnections").toInt(&ok);
+    this->settings->userAgent = qs.value("userAgent").toString().toStdString();
+    this->settings->workingDirectory = qs.value("workingDirectory").toString().toStdString();        
+    qs.endGroup();
+}
+void settingsWindow::setSettings(){
+    QSettings qs("MaduraA","MultiAxel");
+    qs.beginGroup("Settings");
+    qs.setValue("httpProxy", QVariant(QString().fromStdString(this->settings->httpProxy)));
+    qs.setValue("ftpProxy",QVariant(QString().fromStdString(this->settings->ftpProxy)));
+    qs.setValue("maxSpeed",QVariant(this->settings->maxSpeed));
+    qs.setValue("numberOfConnections", QVariant(this->settings->numberOfConnections));
+    qs.setValue("userAgent",QVariant(QString().fromStdString(this->settings->userAgent)));
+    qs.setValue("workingDirectory", QVariant(QString().fromStdString(this->settings->workingDirectory)));
+    qs.endGroup();
+    qs.sync();
+}
+
+settingsWindow::settingsWindow() {
     widget.setupUi(this);
-    this->settings = s;
-    widget.outputDirectoryLineEdit->setText(QString(s->workingDirectory.c_str()));
-    widget.proxyLineEdit->setText(QString(s->httpProxy.c_str()));
-    widget.maxSpeedLineEdit->setText(QString("").setNum(s->maxSpeed,10));
-    widget.maxConnectionsLineEdit->setText(QString("").setNum(s->numberOfConnections,10));  
-    widget.userAgentLineEdit->setText(QString(s->userAgent.c_str()));
+    this->settings = new AxelSettings;
+    this->getSettings();
+    widget.outputDirectoryLineEdit->setText(this->settings->workingDirectory.c_str());
+    widget.proxyLineEdit->setText(this->settings->httpProxy.c_str());
+    widget.maxSpeedLineEdit->setText(QString("").sprintf("%d",this->settings->maxSpeed));
+    widget.maxConnectionsLineEdit->setText(QString("").sprintf("%d",this->settings->numberOfConnections));  
+    widget.userAgentLineEdit->setText(this->settings->userAgent.c_str());
 }
 void settingsWindow::on_pbBox_clicked(QAbstractButton *b) {
     if (widget.pbBox->standardButton(b) == QDialogButtonBox::Ok){
         if (widget.outputDirectoryLineEdit->text().size() > 0 ) {
-            this->settings->workingDirectory = widget.outputDirectoryLineEdit->text().toStdString();
+            this->settings->workingDirectory.assign(widget.outputDirectoryLineEdit->text().toStdString());
         } else {
-            this->settings->workingDirectory = string("");
+            this->settings->workingDirectory.assign("");
         }
         
         if (widget.maxSpeedLineEdit->text().size() > 0 ) {
@@ -50,21 +78,23 @@ void settingsWindow::on_pbBox_clicked(QAbstractButton *b) {
         }
         
         if (widget.proxyLineEdit->text().size() > 0 ) {
-            this->settings->httpProxy = widget.proxyLineEdit->text().toStdString();
-            this->settings->ftpProxy = string(this->settings->httpProxy);
+            this->settings->httpProxy.assign(widget.proxyLineEdit->text().toStdString());
+            this->settings->ftpProxy.assign(this->settings->httpProxy.c_str());
         } else {
-            this->settings->httpProxy = string("");
-            this->settings->ftpProxy = string("");
+            this->settings->httpProxy.assign("");
+            this->settings->ftpProxy.assign("");
         }
         
         if (widget.userAgentLineEdit->text().size() > 0 ) {
-            this->settings->userAgent = widget.userAgentLineEdit->text().toStdString();
+            this->settings->userAgent.assign(widget.userAgentLineEdit->text().toStdString());
         } else {
-            this->settings->userAgent = string("");
+            this->settings->userAgent.assign("");
         }
+        this->setSettings();
     }
     this->close();
 }
 settingsWindow::~settingsWindow() {
+    delete this->settings;
 }
  

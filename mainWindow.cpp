@@ -55,6 +55,7 @@ void mainWindow::setSettings(){
 }
 mainWindow::mainWindow(bool *up) {
     widget.setupUi(this);
+   
     QIcon tray(":/img/tray.png");
     trayIcon = new QSystemTrayIcon(this);
     trayIcon->setIcon(tray);
@@ -83,6 +84,8 @@ mainWindow::mainWindow(bool *up) {
     this->settings = new AxelSettings;
     QSettings qs("MaduraA","MultiAxel");
     
+    DPRINT("sem_init"<<sem_init(&this->update_lock, 0, 1));
+    
     if (qs.allKeys().size()!=0) {
         getSettings();
         int lst = qs.beginReadArray("List");
@@ -110,10 +113,9 @@ mainWindow::mainWindow(bool *up) {
     QRect frect = frameGeometry();
     frect.moveCenter(QDesktopWidget().availableGeometry().center());
     move(frect.topLeft());
-
-    pthread_create(&this->th_updater, NULL, &mainWindow::thread_updater, this);
     *up = true;
-    sem_init(&this->update_lock, 0, 1);
+    pthread_create(&this->th_updater, NULL, &mainWindow::thread_updater, this);
+    
 }
 mainWindow::~mainWindow() {
     pthread_cancel(this->th_updater);
@@ -126,12 +128,12 @@ mainWindow::~mainWindow() {
     }
     qs.endArray();
     qs.sync();
+    //delete settings;
     delete trayIcon;
     delete trayMenu;
     delete trayNewDownload;
     delete trayQuit;
     delete listModel;
-    delete settings;
 }
 void *mainWindow::thread_updater(void * obj){
     mainWindow *w = (mainWindow *) obj;
@@ -221,7 +223,7 @@ void mainWindow::startNewDownload(QString url, QStringList *sl, bool paused){
 }
 void mainWindow::on_pbStart_clicked(){
     QItemSelectionModel *sm = widget.lstDownloads->selectionModel();
-    if (sm->selectedIndexes().size() == 0)
+    if (sm == NULL || sm->selectedIndexes().size() == 0)
         return;
     QModelIndex qi = sm->selectedRows(0)[0];
     
@@ -229,18 +231,18 @@ void mainWindow::on_pbStart_clicked(){
 }
 void mainWindow::on_pbStop_clicked(){
     QItemSelectionModel *sm = widget.lstDownloads->selectionModel();
-    if (sm->selectedIndexes().size() == 0)
+    
+    if (sm == NULL || sm->selectedIndexes().size() == 0)
         return;
     QModelIndex qi = sm->selectedRows(0)[0];
 
     this->axels->at(qi.row())->stop();
 }
 void mainWindow::on_actionSettings_triggered(){
-    settingsWindow sw(this->settings);
+    settingsWindow sw;
     sw.setModal(true);
     sw.exec();
-
-    setSettings();
+    getSettings();
 }
 void mainWindow::on_actionNew_Download_triggered(){
     bool ok;

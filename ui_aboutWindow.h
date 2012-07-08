@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'aboutWindow.ui'
 **
-** Created: Sun Jul 1 21:58:21 2012
+** Created: Sun Jul 8 12:25:27 2012
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -31,6 +31,7 @@ public:
     QVBoxLayout *verticalLayout;
     QLabel *label_2;
     QLabel *label;
+    QLabel *lblCompileDate;
 
     void setupUi(QDialog *About)
     {
@@ -61,6 +62,13 @@ public:
 
         gridLayout->addWidget(label, 0, 0, 1, 1);
 
+        lblCompileDate = new QLabel(About);
+        lblCompileDate->setObjectName(QString::fromUtf8("lblCompileDate"));
+        lblCompileDate->setStyleSheet(QString::fromUtf8(""));
+        lblCompileDate->setTextFormat(Qt::AutoText);
+
+        gridLayout->addWidget(lblCompileDate, 1, 0, 1, 1);
+
 
         retranslateUi(About);
         QObject::connect(pushButton, SIGNAL(clicked()), About, SLOT(accept()));
@@ -74,6 +82,7 @@ public:
         pushButton->setText(QApplication::translate("About", "Close", 0, QApplication::UnicodeUTF8));
         label_2->setText(QApplication::translate("About", "<html><head/><body><p align=\"center\"><span style=\" font-weight:600;\">Developer</span></p><p align=\"center\">Madura A. (madura.x86@gmail.com)</p><p align=\"center\"><span style=\" font-weight:600;\">License</span></p><p align=\"center\">GPL v2</p><p align=\"center\"><span style=\" font-weight:600;\">Git</span></p><p align=\"center\"><a href=\"https://github.com/madurax86/multi-axel\"><span style=\" text-decoration: underline; color:#0057ae;\">https://github.com/madurax86/multi-axel</span></a></p><p align=\"center\"><span style=\" font-weight:600;\">Copyright</span></p><p align=\"center\">(C) 2012 Madura A.</p></body></html>", 0, QApplication::UnicodeUTF8));
         label->setText(QApplication::translate("About", "<html><head/><body><p align=\"center\">A GUI front end for <span style=\" font-weight:600;\">multi</span>ple <span style=\" font-weight:600;\">axel</span> processes</p></body></html>", 0, QApplication::UnicodeUTF8));
+        lblCompileDate->setText(QString());
     } // retranslateUi
 
 };
