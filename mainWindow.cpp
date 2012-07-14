@@ -128,7 +128,7 @@ mainWindow::~mainWindow() {
     }
     qs.endArray();
     qs.sync();
-    //delete settings;
+    delete settings;
     delete trayIcon;
     delete trayMenu;
     delete trayNewDownload;
@@ -181,8 +181,13 @@ void *mainWindow::thread_updater(void * obj){
 void mainWindow::startNewDownload(QString url, QStringList *sl, bool paused){
     url = url.trimmed();
     AxelSettings s;
+    s.ftpProxy = this->settings->ftpProxy;
+    s.httpProxy = this->settings->httpProxy;
+    s.maxSpeed = this->settings->maxSpeed;
+    s.numberOfConnections = this->settings->numberOfConnections;
+    s.userAgent = this->settings->userAgent;
+    s.workingDirectory = this->settings->workingDirectory;
     
-    memcpy(&s, this->settings, sizeof(AxelSettings));
     if (url.size() == 0 )
         return;
     
