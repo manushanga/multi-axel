@@ -187,7 +187,7 @@ void mainWindow::startNewDownload(QString url, QStringList *sl, bool paused){
     s.numberOfConnections = this->settings->numberOfConnections;
     s.userAgent = this->settings->userAgent;
     s.workingDirectory = this->settings->workingDirectory;
-    
+
     if (url.size() == 0 )
         return;
     
