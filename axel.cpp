@@ -256,6 +256,7 @@ void Axel::stop(){
         close(this->out_fd);
         kill(this->pid, SIGQUIT);
         this->pid = 0;
+        this->state = AXEL_PAUSED;
     }
 }
 int Axel::getPercentage(){
