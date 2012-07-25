@@ -67,8 +67,8 @@ Axel::Axel(string url, AxelSettings& settings){
     }
     args->push_back("-o");
     args->push_back(this->name);
-    
     args->push_back(url);
+
     DPRINT(this->name);
 }
 void *Axel::threaded_read(void *obj){
@@ -243,16 +243,16 @@ void Axel::start(){
             this->pid = pid;
             this->out_fd = pipefd[0];
             close(pipefd[1]);
-            waitpid(pid, NULL,WNOHANG);
-            pthread_t th1;
-            pthread_create(&th1, NULL, &Axel::threaded_read, this);
+            waitpid(pid, NULL, WNOHANG);
+            pthread_create(&this->th, NULL, &Axel::threaded_read, this);
         } else {
             perror("Axel::start::fork");
         }
     }
 }
 void Axel::stop(){
-    if (this->state != AXEL_PAUSED && this->state != AXEL_ERROR && this->state != AXEL_DONE){
+    if (this->pid != 0){
+        pthread_cancel(this->th);
         close(this->out_fd);
         kill(this->pid, SIGQUIT);
         this->pid = 0;

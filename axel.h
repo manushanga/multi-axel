@@ -45,6 +45,7 @@ private:
     state_t state;
     int percentage;
     string workingdir;
+    pthread_t th;
     static void *threaded_read(void *obj);
 public:
     Axel(string url, AxelSettings& settings);
