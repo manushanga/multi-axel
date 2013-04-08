@@ -254,7 +254,7 @@ void Axel::stop(){
     if (this->pid != 0){
         pthread_cancel(this->th);
         close(this->out_fd);
-        kill(this->pid, SIGQUIT);
+        kill(this->pid, SIGINT);
         this->pid = 0;
         this->state = AXEL_PAUSED;
     }
